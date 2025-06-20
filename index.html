@@ -831,7 +831,7 @@
                             <div class="stat-icon">
                                 <i class="fas fa-tv"></i>
                             </div>
-                            <div class="stat-value" id="channelsCount">0</div>
+                            <div class="stat-value" id="channelsCount">128</div>
                             <div class="stat-label">قناة تلفزيونية</div>
                         </div>
                         
@@ -847,7 +847,7 @@
                             <div class="stat-icon">
                                 <i class="fas fa-bullhorn"></i>
                             </div>
-                            <div class="stat-value" id="adsCount">0</div>
+                            <div class="stat-value" id="adsCount">24</div>
                             <div class="stat-label">إعلانات نشطة</div>
                         </div>
                     </div>
@@ -864,7 +864,44 @@
                 </div>
                 
                 <div class="ads-carousel" id="adsCarousel">
-                    <!-- Ads will be loaded here -->
+                    <!-- Ad 1 -->
+                    <div class="ad-slide active" style="background-image: url('https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?q=80&w=1887&auto=format&fit=crop')">
+                        <div class="ad-content">
+                            <div class="ad-badge">عرض خاص</div>
+                            <h3 class="ad-title">اشترك الآن واحصل على 3 أشهر مجانًا!</h3>
+                            <p class="ad-desc">استمتع بمشاهدة جميع القنوات بدون إعلانات وبجودة عالية مع اشتراك TvNa المميز</p>
+                            <a href="#" class="ad-link">
+                                <span>اشترك الآن</span>
+                                <i class="fas fa-arrow-left"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Ad 2 -->
+                    <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2070&auto=format&fit=crop')">
+                        <div class="ad-content">
+                            <div class="ad-badge">جديد</div>
+                            <h3 class="ad-title">القنوات الرياضية الحصرية</h3>
+                            <p class="ad-desc">مشاهدة جميع المباريات والبطولات الرياضية حصريًا على TvNa</p>
+                            <a href="#" class="ad-link">
+                                <span>اكتشف الآن</span>
+                                <i class="fas fa-arrow-left"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Ad 3 -->
+                    <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1563986768711-b3bde3dc821e?q=80&w=2068&auto=format&fit=crop')">
+                        <div class="ad-content">
+                            <div class="ad-badge">حصري</div>
+                            <h3 class="ad-title">أحدث المسلسلات والبرامج</h3>
+                            <p class="ad-desc">أول عرض حصري لأحدث المسلسلات والبرامج الترفيهية على TvNa</p>
+                            <a href="#" class="ad-link">
+                                <span>اكتشف المزيد</span>
+                                <i class="fas fa-arrow-left"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -877,7 +914,7 @@
                 </div>
                 
                 <div class="channels-grid" id="featuredChannels">
-                    <!-- Featured channels will be loaded here -->
+                    <!-- Channels will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -893,7 +930,7 @@
                 </div>
                 
                 <div class="channels-grid" id="allChannels">
-                    <!-- All channels will be loaded here -->
+                    <!-- Channels will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -909,7 +946,7 @@
                 </div>
                 
                 <div class="channels-grid" id="categoriesContent">
-                    <!-- Categories will be loaded here -->
+                    <!-- Categories will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -925,7 +962,7 @@
                 </div>
                 
                 <div class="channels-grid" id="favoritesContent">
-                    <!-- Favorites will be loaded here -->
+                    <!-- Favorites will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -941,7 +978,7 @@
                 </div>
                 
                 <div class="channels-grid" id="newsContent">
-                    <!-- News will be loaded here -->
+                    <!-- News will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -1033,10 +1070,6 @@
     </footer>
 
     <script>
-        // Supabase configuration
-        const SUPABASE_URL = 'https://vpvvjascwgivdjyyhzwp.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ';
-        
         // State variables
         let currentUser = null;
         let channels = [];
@@ -1063,8 +1096,14 @@
             // Set up event listeners
             setupEventListeners();
             
-            // Load data from Supabase
-            loadData();
+            // Load mock data
+            loadMockData();
+            
+            // Render initial UI
+            renderFeaturedChannels();
+            renderAllChannels();
+            renderCategories();
+            startAdCarousel();
         });
         
         // Set up event listeners
@@ -1146,10 +1185,8 @@
             document.querySelector(`.nav-link[data-tab="${tabName}"]`).classList.add('active');
             
             // Load data for the tab if needed
-            if (tabName === 'categories') {
-                loadCategories();
-            } else if (tabName === 'favorites') {
-                loadFavorites();
+            if (tabName === 'favorites') {
+                renderFavorites();
             }
         }
         
@@ -1163,8 +1200,7 @@
                 return;
             }
             
-            // In a real app, you would authenticate with Supabase here
-            // For this example, we'll simulate a login
+            // Simulate login
             currentUser = {
                 id: 'user123',
                 username: email.split('@')[0],
@@ -1178,100 +1214,115 @@
             document.getElementById('welcomeSubtitle').textContent = 'استمتع الآن بأفضل القنوات المحلية والعالمية';
             
             // Load user-specific data
-            loadFavorites();
+            renderFavorites();
         }
         
-        // Load data from Supabase
-        async function loadData() {
-            try {
-                // Fetch channels
-                const channelsResponse = await fetch(`${SUPABASE_URL}/rest/v1/channels?is_active=eq.true`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                channels = await channelsResponse.json();
-                
-                // Fetch ads
-                const adsResponse = await fetch(`${SUPABASE_URL}/rest/v1/advertisements?is_active=eq.true`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                ads = await adsResponse.json();
-                
-                // Fetch categories
-                const categoriesResponse = await fetch(`${SUPABASE_URL}/rest/v1/categories?is_active=eq.true`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`
-                    }
-                });
-                categories = await categoriesResponse.json();
-                
-                // Update UI
-                updateStats();
-                renderAds();
-                renderFeaturedChannels();
-                renderAllChannels();
-            } catch (error) {
-                console.error('Error loading data:', error);
-                alert('حدث خطأ أثناء تحميل البيانات. يرجى المحاولة لاحقاً.');
-            }
-        }
-        
-        // Load categories
-        async function loadCategories() {
-            // Categories are already loaded, just render them
-            renderCategories();
-        }
-        
-        // Load favorites
-        async function loadFavorites() {
-            // In a real app, you would fetch user's favorites from Supabase
-            // For this example, we'll use the first 4 channels as favorites
-            if (channels.length > 0) {
-                favorites = channels.slice(0, 4);
-                renderFavorites();
-            }
-        }
-        
-        // Update statistics
-        function updateStats() {
-            document.getElementById('channelsCount').textContent = channels.length;
-            document.getElementById('favoritesCount').textContent = favorites.length;
-            document.getElementById('adsCount').textContent = ads.length;
-        }
-        
-        // Render ads
-        function renderAds() {
-            const adsCarousel = document.getElementById('adsCarousel');
-            adsCarousel.innerHTML = '';
+        // Load mock data
+        function loadMockData() {
+            // Mock channels
+            channels = [
+                {
+                    id: '1',
+                    name: 'Al Jazeera',
+                    name_ar: 'الجزيرة',
+                    description: 'News channel',
+                    description_ar: 'قناة إخبارية رائدة',
+                    image_url: 'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?q=80&w=1887&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'أخبار',
+                    is_premium: false,
+                    viewers_count: 15000,
+                    rating: 4.5
+                },
+                {
+                    id: '2',
+                    name: 'BeIN Sports',
+                    name_ar: 'بي إن سبورت',
+                    description: 'Sports channel',
+                    description_ar: 'قناة رياضية متخصصة',
+                    image_url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2070&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'رياضة',
+                    is_premium: true,
+                    viewers_count: 25000,
+                    rating: 4.8
+                },
+                {
+                    id: '3',
+                    name: 'MBC 1',
+                    name_ar: 'إم بي سي 1',
+                    description: 'General entertainment',
+                    description_ar: 'قناة ترفيهية عامة',
+                    image_url: 'https://images.unsplash.com/photo-1563986768711-b3bde3dc821e?q=80&w=2068&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'ترفيه',
+                    is_premium: false,
+                    viewers_count: 18000,
+                    rating: 4.3
+                },
+                {
+                    id: '4',
+                    name: 'Rotana Cinema',
+                    name_ar: 'روتانا سينما',
+                    description: 'Movie channel',
+                    description_ar: 'قناة أفلام سينمائية',
+                    image_url: 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'أفلام',
+                    is_premium: true,
+                    viewers_count: 12000,
+                    rating: 4.6
+                },
+                {
+                    id: '5',
+                    name: 'Cartoon Network',
+                    name_ar: 'كرتون نتورك',
+                    description: 'Kids channel',
+                    description_ar: 'قناة أطفال',
+                    image_url: 'https://images.unsplash.com/photo-1592155931584-901ac15763e3?q=80&w=1935&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'أطفال',
+                    is_premium: false,
+                    viewers_count: 10000,
+                    rating: 4.7
+                },
+                {
+                    id: '6',
+                    name: 'National Geographic',
+                    name_ar: 'ناشيونال جيوغرافيك',
+                    description: 'Documentary channel',
+                    description_ar: 'قناة وثائقية',
+                    image_url: 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?q=80&w=1975&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'وثائقي',
+                    is_premium: true,
+                    viewers_count: 9000,
+                    rating: 4.9
+                }
+            ];
             
-            ads.forEach((ad, index) => {
-                const slide = document.createElement('div');
-                slide.className = `ad-slide ${index === 0 ? 'active' : ''}`;
-                slide.style.backgroundImage = `url('${ad.imageUrl}')`;
-                slide.innerHTML = `
-                    <div class="ad-content">
-                        <div class="ad-badge">مميز</div>
-                        <h3 class="ad-title">${ad.title}</h3>
-                        <p class="ad-desc">${ad.description}</p>
-                        ${ad.link ? `<a href="${ad.link}" class="ad-link" target="_blank">
-                            <span>المزيد</span>
-                            <i class="fas fa-arrow-left"></i>
-                        </a>` : ''}
-                    </div>
-                `;
-                adsCarousel.appendChild(slide);
-            });
+            // Mock categories
+            categories = [
+                { id: '1', name: 'Sports', name_ar: 'رياضة' },
+                { id: '2', name: 'News', name_ar: 'أخبار' },
+                { id: '3', name: 'Entertainment', name_ar: 'ترفيه' },
+                { id: '4', name: 'Movies', name_ar: 'أفلام' },
+                { id: '5', name: 'Kids', name_ar: 'أطفال' },
+                { id: '6', name: 'Documentary', name_ar: 'وثائقي' }
+            ];
             
-            // Auto rotate ads
+            // Mock favorites
+            favorites = [channels[1], channels[3], channels[5]];
+        }
+        
+        // Start ad carousel
+        function startAdCarousel() {
             let currentAd = 0;
+            const slides = document.querySelectorAll('.ad-slide');
+            
+            if (slides.length === 0) return;
+            
             setInterval(() => {
-                const slides = document.querySelectorAll('.ad-slide');
                 slides.forEach((slide, i) => {
                     slide.classList.toggle('active', i === currentAd);
                 });
@@ -1284,8 +1335,8 @@
             const featuredContainer = document.getElementById('featuredChannels');
             featuredContainer.innerHTML = '';
             
-            // Get 4 premium channels
-            const featuredChannels = channels.filter(c => c.isPremium).slice(0, 4);
+            // Get premium channels
+            const featuredChannels = channels.filter(c => c.is_premium);
             
             featuredChannels.forEach(channel => {
                 featuredContainer.appendChild(createChannelCard(channel));
@@ -1308,7 +1359,7 @@
             categoriesContainer.innerHTML = '';
             
             categories.forEach(category => {
-                const categoryChannels = channels.filter(c => c.category === category.name);
+                const categoryChannels = channels.filter(c => c.category === category.name_ar);
                 
                 const categoryCard = document.createElement('div');
                 categoryCard.className = 'channel-card';
@@ -1321,11 +1372,11 @@
                     <div class="channel-content">
                         <h3 class="channel-name">
                             <i class="fas fa-tag"></i>
-                            ${category.nameAr || category.name}
+                            ${category.name_ar}
                         </h3>
                         <p class="channel-desc">${categoryChannels.length} قنوات</p>
                         <div class="channel-actions">
-                            <div class="action-btn" style="flex: 1" data-category="${category.name}">
+                            <div class="action-btn" style="flex: 1" data-category="${category.name_ar}">
                                 <span>عرض القنوات</span>
                             </div>
                         </div>
@@ -1356,6 +1407,17 @@
             const allChannelsContainer = document.getElementById('allChannels');
             allChannelsContainer.innerHTML = '';
             
+            if (categoryChannels.length === 0) {
+                allChannelsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+                        <i class="fas fa-folder-open" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                        <h3>لا توجد قنوات في هذا التصنيف</h3>
+                        <p>سيتم إضافة قنوات جديدة قريباً</p>
+                    </div>
+                `;
+                return;
+            }
+            
             categoryChannels.forEach(channel => {
                 allChannelsContainer.appendChild(createChannelCard(channel));
             });
@@ -1368,6 +1430,24 @@
         function renderFavorites() {
             const favoritesContainer = document.getElementById('favoritesContent');
             favoritesContainer.innerHTML = '';
+            
+            if (!currentUser) {
+                favoritesContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+                        <i class="fas fa-user-lock" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                        <h3>يجب تسجيل الدخول</h3>
+                        <p>سجل الدخول لعرض قنواتك المفضلة</p>
+                        <button class="login-btn" style="margin-top: 1rem; width: auto; padding: 0.8rem 2rem;" id="loginFromFavorites">
+                            تسجيل الدخول
+                        </button>
+                    </div>
+                `;
+                
+                document.getElementById('loginFromFavorites').addEventListener('click', () => {
+                    loginModal.style.display = 'flex';
+                });
+                return;
+            }
             
             if (favorites.length === 0) {
                 favoritesContainer.innerHTML = `
@@ -1391,21 +1471,21 @@
             card.className = 'channel-card';
             card.innerHTML = `
                 <div class="channel-header">
-                    <img src="${channel.imageUrl}" class="channel-image" alt="${channel.name}">
-                    ${channel.isPremium ? '<div class="channel-badge">مميز</div>' : ''}
+                    <img src="${channel.image_url}" class="channel-image" alt="${channel.name_ar || channel.name}">
+                    ${channel.is_premium ? '<div class="channel-badge">مميز</div>' : ''}
                     <div class="channel-live">مباشر</div>
                 </div>
                 <div class="channel-content">
                     <h3 class="channel-name">
                         <i class="fas fa-satellite"></i>
-                        ${channel.nameAr || channel.name}
+                        ${channel.name_ar || channel.name}
                         <span class="channel-category">${channel.category}</span>
                     </h3>
-                    <p class="channel-desc">${channel.descriptionAr || channel.description}</p>
+                    <p class="channel-desc">${channel.description_ar || channel.description}</p>
                     <div class="channel-stats">
                         <div class="stat">
                             <i class="fas fa-eye"></i>
-                            <span>${channel.viewersCount} مشاهد</span>
+                            <span>${channel.viewers_count.toLocaleString()} مشاهد</span>
                         </div>
                         <div class="stat">
                             <i class="fas fa-star"></i>
@@ -1451,7 +1531,7 @@
                     toggleFavorite(channel);
                     break;
                 case 'record':
-                    alert(`تم جدولة تسجيل قناة ${channel.nameAr || channel.name}`);
+                    alert(`تم جدولة تسجيل قناة ${channel.name_ar || channel.name}`);
                     break;
                 case 'play':
                     playChannel(channel);
@@ -1471,11 +1551,11 @@
             if (index === -1) {
                 // Add to favorites
                 favorites.push(channel);
-                alert(`تم إضافة ${channel.nameAr || channel.name} إلى المفضلة`);
+                alert(`تم إضافة ${channel.name_ar || channel.name} إلى المفضلة`);
             } else {
                 // Remove from favorites
                 favorites.splice(index, 1);
-                alert(`تم إزالة ${channel.nameAr || channel.name} من المفضلة`);
+                alert(`تم إزالة ${channel.name_ar || channel.name} من المفضلة`);
             }
             
             // Update UI
@@ -1496,16 +1576,16 @@
             // Show player
             videoPlayer.style.display = 'block';
             
-            // Initialize HLS.js if needed
+            // Initialize HLS.js
             if (Hls.isSupported()) {
                 const hls = new Hls();
-                hls.loadSource(channel.url);
+                hls.loadSource(channel.stream_url);
                 hls.attachMedia(playerElement);
                 hls.on(Hls.Events.MANIFEST_PARSED, function() {
                     playerElement.play();
                 });
             } else if (playerElement.canPlayType('application/vnd.apple.mpegurl')) {
-                playerElement.src = channel.url;
+                playerElement.src = channel.stream_url;
                 playerElement.addEventListener('loadedmetadata', function() {
                     playerElement.play();
                 });
