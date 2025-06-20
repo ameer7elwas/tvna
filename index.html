@@ -393,6 +393,43 @@
             60% { transform: translateY(-3px); }
         }
 
+        /* Connection Status */
+        .connection-status {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 0.8rem 1.2rem;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            z-index: 1001;
+            min-width: 250px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        .connection-status.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .connection-status.connected {
+            border-color: var(--success);
+            background: linear-gradient(135deg, rgba(76, 201, 240, 0.1), rgba(40, 167, 69, 0.1));
+        }
+
+        .connection-status.connecting {
+            border-color: var(--warning);
+            background: linear-gradient(135deg, rgba(255, 158, 0, 0.1), rgba(255, 107, 53, 0.1));
+        }
+
+        .connection-status.error {
+            border-color: var(--danger);
+            background: linear-gradient(135deg, rgba(231, 76, 60, 0.1), rgba(220, 53, 69, 0.1));
+        }
+
         /* Hero Section Enhanced */
         .hero {
             padding: 4rem 2rem;
@@ -1900,6 +1937,14 @@
         </div>
     </div>
 
+    <!-- Connection Status -->
+    <div class="connection-status" id="connectionStatus">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="loading-spinner"></div>
+            <span>جاري الاتصال بقاعدة البيانات...</span>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
@@ -1973,7 +2018,7 @@
                             <div class="stat-icon">
                                 <i class="fas fa-tv"></i>
                             </div>
-                            <div class="stat-value" id="channelsCount">150+</div>
+                            <div class="stat-value" id="channelsCount">0</div>
                             <div class="stat-label">قناة تلفزيونية</div>
                         </div>
                         
@@ -2089,8 +2134,9 @@
                         <i class="fas fa-signal"></i>
                         <select class="filter-select" id="qualityFilter">
                             <option value="">جميع الجودات</option>
-                            <option value="hd">عالي الوضوح HD</option>
-                            <option value="sd">وضوح عادي SD</option>
+                            <option value="HD">عالي الوضوح HD</option>
+                            <option value="FHD">فائق الوضوح FHD</option>
+                            <option value="4K">دقة 4K</option>
                         </select>
                     </div>
                     
@@ -2180,8 +2226,8 @@
             <h2 class="modal-title">تسجيل الدخول</h2>
             
             <div class="input-group">
-                <label for="email">البريد الإلكتروني</label>
-                <input type="email" id="email" placeholder="ادخل بريدك الإلكتروني">
+                <label for="email">البريد الإلكتروني أو اسم المستخدم</label>
+                <input type="text" id="email" placeholder="ادخل بريدك الإلكتروني أو اسم المستخدم">
             </div>
             
             <div class="input-group">
@@ -2283,12 +2329,12 @@
         <div class="copyright">
             © 2025 TvNa تيڤي نا. جميع الحقوق محفوظة. تم التطوير بواسطة Ameer_7elwas
             <br>
-            <small>الموقع مطور للأغراض التعليمية والتوضيحية</small>
+            <small>الموقع متصل بقاعدة بيانات Supabase</small>
         </div>
     </footer>
 
     <script>
-        // Enhanced TvNa JavaScript Application
+        // Enhanced TvNa JavaScript Application with Supabase Integration
         class TvNaApp {
             constructor() {
                 // Supabase configuration
@@ -2309,10 +2355,12 @@
                     search: ''
                 };
                 this.isLoading = false;
+                this.isConnected = false;
                 
                 // UI elements
                 this.elements = {
                     pageLoader: document.getElementById('pageLoader'),
+                    connectionStatus: document.getElementById('connectionStatus'),
                     header: document.getElementById('header'),
                     loginBtn: document.getElementById('loginBtn'),
                     loginModal: document.getElementById('loginModal'),
@@ -2337,13 +2385,333 @@
             async init() {
                 try {
                     this.setupEventListeners();
-                    this.loadMockData();
+                    await this.testConnection();
+                    await this.loadAllData();
                     this.checkUserSession();
                     this.hideLoader();
                     this.animateElements();
                 } catch (error) {
                     console.error('Application initialization failed:', error);
+                    this.showConnectionStatus('error', 'فشل في تحميل التطبيق');
                     this.showToast('خطأ في تحميل التطبيق', 'error');
+                }
+            }
+
+            // Enhanced Supabase API functions
+            async supabaseRequest(endpoint, options = {}) {
+                const url = `${this.SUPABASE_URL}/rest/v1/${endpoint}`;
+                const headers = {
+                    'apikey': this.SUPABASE_KEY,
+                    'Authorization': `Bearer ${this.SUPABASE_KEY}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=representation',
+                    ...options.headers
+                };
+
+                try {
+                    console.log(`Making request to: ${url}`, options);
+                    
+                    const response = await fetch(url, {
+                        ...options,
+                        headers
+                    });
+
+                    console.log(`Response status: ${response.status}`);
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Supabase error:', errorText);
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                    }
+
+                    const text = await response.text();
+                    const result = text ? JSON.parse(text) : null;
+                    console.log('Supabase response:', result);
+                    return result;
+                } catch (error) {
+                    console.error('Supabase request error:', error);
+                    throw error;
+                }
+            }
+
+            async testConnection() {
+                try {
+                    this.showConnectionStatus('connecting', 'جاري اختبار الاتصال بقاعدة البيانات...');
+                    
+                    const result = await this.supabaseRequest('channels?limit=1');
+                    
+                    this.isConnected = true;
+                    this.showConnectionStatus('connected', '✅ متصل بقاعدة البيانات بنجاح');
+                    
+                    setTimeout(() => {
+                        this.hideConnectionStatus();
+                    }, 3000);
+                    
+                } catch (error) {
+                    console.error('Connection test failed:', error);
+                    this.isConnected = false;
+                    this.showConnectionStatus('error', '❌ فشل الاتصال بقاعدة البيانات');
+                    
+                    setTimeout(() => {
+                        this.hideConnectionStatus();
+                    }, 5000);
+                }
+            }
+
+            showConnectionStatus(type, message) {
+                const statusElement = this.elements.connectionStatus;
+                statusElement.className = `connection-status ${type} show`;
+                statusElement.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        ${type === 'connecting' ? '<div class="loading-spinner"></div>' : ''}
+                        <span>${message}</span>
+                    </div>
+                `;
+            }
+
+            hideConnectionStatus() {
+                this.elements.connectionStatus.classList.remove('show');
+            }
+
+            async loadAllData() {
+                try {
+                    // Show loading state
+                    this.isLoading = true;
+                    
+                    // Load data from Supabase
+                    await Promise.all([
+                        this.loadChannelsFromDB(),
+                        this.loadCategoriesFromDB(),
+                        this.loadAdsFromDB()
+                    ]);
+                    
+                    this.updateStats();
+                    this.renderAds();
+                    this.renderFeaturedChannels();
+                    this.renderAllChannels();
+                    this.populateFilters();
+                    
+                    this.isLoading = false;
+                    this.showToast('تم تحميل جميع البيانات بنجاح', 'success');
+                    
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    this.isLoading = false;
+                    
+                    // Fallback to mock data if database connection fails
+                    this.loadMockData();
+                    this.showToast('تم تحميل البيانات التجريبية (فشل الاتصال بقاعدة البيانات)', 'warning');
+                }
+            }
+
+            async loadChannelsFromDB() {
+                try {
+                    const channels = await this.supabaseRequest('channels?select=*&order=order_index.asc.nullslast,name.asc');
+                    
+                    if (channels && channels.length > 0) {
+                        this.channels = channels.map(channel => ({
+                            id: channel.id,
+                            name: channel.name,
+                            nameAr: channel.name_ar || channel.name,
+                            description: channel.description || '',
+                            descriptionAr: channel.description_ar || channel.description || '',
+                            category: channel.category,
+                            imageUrl: channel.image_url || 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(channel.name),
+                            url: channel.url,
+                            isPremium: channel.membership_type === 'premium' || channel.membership_type === 'vip',
+                            isLive: channel.is_active,
+                            quality: channel.quality || 'HD',
+                            viewersCount: channel.viewers_count || 0,
+                            rating: 4.5 + Math.random() * 0.5,
+                            membershipType: channel.membership_type || 'free'
+                        }));
+                        
+                        console.log('Loaded channels from database:', this.channels.length);
+                    } else {
+                        console.log('No channels found in database, using mock data');
+                        this.loadMockChannels();
+                    }
+                } catch (error) {
+                    console.error('Error loading channels from database:', error);
+                    this.loadMockChannels();
+                }
+            }
+
+            async loadCategoriesFromDB() {
+                try {
+                    const categories = await this.supabaseRequest('categories?select=*&order=order_index.asc,name.asc');
+                    
+                    if (categories && categories.length > 0) {
+                        this.categories = categories.map(category => ({
+                            id: category.id,
+                            name: category.name,
+                            nameAr: category.name_ar || category.name,
+                            icon: this.getCategoryIcon(category.name),
+                            isActive: category.is_active
+                        }));
+                        
+                        console.log('Loaded categories from database:', this.categories.length);
+                    } else {
+                        console.log('No categories found in database, using mock data');
+                        this.loadMockCategories();
+                    }
+                } catch (error) {
+                    console.error('Error loading categories from database:', error);
+                    this.loadMockCategories();
+                }
+            }
+
+            async loadAdsFromDB() {
+                try {
+                    const ads = await this.supabaseRequest('advertisements?select=*&eq.is_active.true&order=created_at.desc');
+                    
+                    if (ads && ads.length > 0) {
+                        this.ads = ads.map((ad, index) => ({
+                            id: ad.id,
+                            title: ad.title_ar || ad.title,
+                            description: ad.description_ar || ad.description,
+                            imageUrl: ad.image_url || 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop',
+                            link: ad.link || '#premium',
+                            isActive: index === 0
+                        }));
+                        
+                        console.log('Loaded ads from database:', this.ads.length);
+                    } else {
+                        console.log('No ads found in database, using mock data');
+                        this.loadMockAds();
+                    }
+                } catch (error) {
+                    console.error('Error loading ads from database:', error);
+                    this.loadMockAds();
+                }
+            }
+
+            getCategoryIcon(categoryName) {
+                const iconMap = {
+                    'Sports': 'fas fa-futbol',
+                    'News': 'fas fa-newspaper',
+                    'Entertainment': 'fas fa-masks-theater',
+                    'Movies': 'fas fa-film',
+                    'Kids': 'fas fa-child',
+                    'General': 'fas fa-tv',
+                    'Music': 'fas fa-music',
+                    'Documentary': 'fas fa-file-video'
+                };
+                return iconMap[categoryName] || 'fas fa-tv';
+            }
+
+            // User authentication
+            async authenticateUser(emailOrUsername, password) {
+                try {
+                    // First, try to find user by email or username
+                    const userQuery = emailOrUsername.includes('@') 
+                        ? `users?select=*&eq.email.${emailOrUsername}`
+                        : `users?select=*&eq.username.${emailOrUsername}`;
+                    
+                    const users = await this.supabaseRequest(userQuery);
+                    
+                    if (users && users.length > 0) {
+                        const user = users[0];
+                        // Simple password verification (in real app, use proper hashing)
+                        const storedPassword = atob(user.password_hash);
+                        
+                        if (password === storedPassword) {
+                            // Update last login
+                            try {
+                                await this.supabaseRequest(`users?id=eq.${user.id}`, {
+                                    method: 'PATCH',
+                                    body: JSON.stringify({
+                                        last_login_at: new Date().toISOString()
+                                    })
+                                });
+                            } catch (error) {
+                                console.error('Error updating last login:', error);
+                            }
+                            
+                            return {
+                                id: user.id,
+                                username: user.username,
+                                email: user.email,
+                                isPremium: user.membership_type === 'premium' || user.membership_type === 'vip',
+                                membershipType: user.membership_type,
+                                allowedChannels: user.allowed_channels || [],
+                                joinDate: new Date(user.created_at),
+                                avatar: user.profile_image
+                            };
+                        }
+                    }
+                    
+                    return null;
+                } catch (error) {
+                    console.error('Authentication error:', error);
+                    return null;
+                }
+            }
+
+            // Favorites management with database
+            async toggleFavorite(channel) {
+                if (!this.currentUser) {
+                    this.showLoginModal();
+                    return;
+                }
+                
+                const index = this.favorites.findIndex(f => f.id === channel.id);
+                
+                try {
+                    if (index === -1) {
+                        // Add to favorites
+                        this.favorites.push(channel);
+                        
+                        // Save to database
+                        await this.supabaseRequest('favorites', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                user_id: this.currentUser.id,
+                                channel_id: channel.id
+                            })
+                        });
+                        
+                        this.showToast(`تم إضافة ${channel.nameAr} إلى المفضلة`, 'success');
+                    } else {
+                        // Remove from favorites
+                        this.favorites.splice(index, 1);
+                        
+                        // Remove from database
+                        await this.supabaseRequest(`favorites?user_id=eq.${this.currentUser.id}&channel_id=eq.${channel.id}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        this.showToast(`تم إزالة ${channel.nameAr} من المفضلة`, 'warning');
+                    }
+                    
+                    this.saveFavoritesToStorage();
+                    this.updateStats();
+                    this.updateFavoriteButtons();
+                    
+                    if (this.currentTab === 'favorites') {
+                        this.renderFavorites();
+                    }
+                } catch (error) {
+                    console.error('Error updating favorites:', error);
+                    this.showToast('خطأ في تحديث المفضلة', 'error');
+                }
+            }
+
+            async loadUserFavorites() {
+                if (!this.currentUser) return;
+                
+                try {
+                    const favorites = await this.supabaseRequest(`favorites?select=channel_id&eq.user_id.${this.currentUser.id}`);
+                    
+                    if (favorites && favorites.length > 0) {
+                        // Get favorite channels
+                        const favoriteChannelIds = favorites.map(f => f.channel_id);
+                        this.favorites = this.channels.filter(c => favoriteChannelIds.includes(c.id));
+                        this.saveFavoritesToStorage();
+                        this.updateStats();
+                    }
+                } catch (error) {
+                    console.error('Error loading user favorites:', error);
                 }
             }
             
@@ -2470,101 +2838,114 @@
             }
             
             loadMockData() {
-                // Mock channels data
+                this.loadMockChannels();
+                this.loadMockCategories();
+                this.loadMockAds();
+                
+                this.updateStats();
+                this.renderAds();
+                this.renderFeaturedChannels();
+                this.renderAllChannels();
+                this.populateFilters();
+            }
+
+            loadMockChannels() {
                 this.channels = [
                     {
                         id: '1',
-                        name: 'قناة الجزيرة',
+                        name: 'Al Jazeera',
                         nameAr: 'قناة الجزيرة',
                         description: 'قناة إخبارية عالمية',
                         descriptionAr: 'قناة إخبارية عالمية تقدم آخر الأخبار والتقارير',
-                        category: 'أخبار',
+                        category: 'News',
                         imageUrl: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=400&h=300&fit=crop',
                         url: 'https://live-hls-web-aje.getaj.net/AJE/01.m3u8',
                         isPremium: false,
                         isLive: true,
-                        quality: 'hd',
+                        quality: 'HD',
                         viewersCount: 15420,
-                        rating: 4.8
+                        rating: 4.8,
+                        membershipType: 'free'
                     },
                     {
                         id: '2',
-                        name: 'العربية',
-                        nameAr: 'قناة العربية',
-                        description: 'قناة إخبارية عربية',
-                        descriptionAr: 'قناة إخبارية عربية رائدة في المنطقة',
-                        category: 'أخبار',
-                        imageUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=300&fit=crop',
-                        url: 'https://live.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8',
-                        isPremium: true,
-                        isLive: true,
-                        quality: 'hd',
-                        viewersCount: 12350,
-                        rating: 4.7
-                    },
-                    {
-                        id: '3',
-                        name: 'MBC مصر',
-                        nameAr: 'ام بي سي مصر',
-                        description: 'قناة ترفيهية مصرية',
-                        descriptionAr: 'قناة ترفيهية تقدم أفضل البرامج والمسلسلات المصرية',
-                        category: 'ترفيه',
-                        imageUrl: 'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=400&h=300&fit=crop',
-                        url: 'https://shls-mbcmasr-prod-dub.shahid.net/out/v1/d5036cabf11e45bf9d0db410ca135c18/index.m3u8',
-                        isPremium: false,
-                        isLive: true,
-                        quality: 'hd',
-                        viewersCount: 8900,
-                        rating: 4.5
-                    },
-                    {
-                        id: '4',
-                        name: 'بين سبورت',
-                        nameAr: 'بين سبورت 1',
+                        name: 'beIN Sports',
+                        nameAr: 'بين سبورت',
                         description: 'قناة رياضية عالمية',
                         descriptionAr: 'قناة رياضية تقدم أهم المباريات والبطولات العالمية',
-                        category: 'رياضة',
+                        category: 'Sports',
                         imageUrl: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=300&fit=crop',
                         url: 'https://example.com/beinsports1.m3u8',
                         isPremium: true,
                         isLive: true,
-                        quality: 'hd',
+                        quality: 'FHD',
                         viewersCount: 25600,
-                        rating: 4.9
+                        rating: 4.9,
+                        membershipType: 'premium'
                     },
                     {
-                        id: '5',
-                        name: 'ناشيونال جيوغرافيك',
-                        nameAr: 'ناشيونال جيوغرافيك أبوظبي',
+                        id: '3',
+                        name: 'MBC Egypt',
+                        nameAr: 'MBC مصر',
+                        description: 'قناة ترفيهية مصرية',
+                        descriptionAr: 'قناة ترفيهية تقدم أفضل البرامج والمسلسلات المصرية',
+                        category: 'Entertainment',
+                        imageUrl: 'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=400&h=300&fit=crop',
+                        url: 'https://shls-mbcmasr-prod-dub.shahid.net/out/v1/d5036cabf11e45bf9d0db410ca135c18/index.m3u8',
+                        isPremium: false,
+                        isLive: true,
+                        quality: 'HD',
+                        viewersCount: 8900,
+                        rating: 4.5,
+                        membershipType: 'free'
+                    },
+                    {
+                        id: '4',
+                        name: 'National Geographic',
+                        nameAr: 'ناشيونال جيوغرافيك',
                         description: 'قناة وثائقية',
                         descriptionAr: 'قناة وثائقية تقدم أفضل البرامج العلمية والطبيعية',
-                        category: 'وثائقي',
+                        category: 'Documentary',
                         imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
                         url: 'https://example.com/natgeo.m3u8',
                         isPremium: false,
                         isLive: true,
-                        quality: 'hd',
+                        quality: 'HD',
                         viewersCount: 5400,
-                        rating: 4.6
+                        rating: 4.6,
+                        membershipType: 'free'
                     },
                     {
-                        id: '6',
-                        name: 'دبي وان',
-                        nameAr: 'قناة دبي وان',
-                        description: 'قناة ترفيهية إماراتية',
-                        descriptionAr: 'قناة ترفيهية متنوعة من دولة الإمارات العربية المتحدة',
-                        category: 'ترفيه',
-                        imageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop',
-                        url: 'https://example.com/dubaione.m3u8',
+                        id: '5',
+                        name: 'Spacetoon',
+                        nameAr: 'سبيستون',
+                        description: 'قناة أطفال',
+                        descriptionAr: 'قناة مخصصة لبرامج وأفلام الأطفال',
+                        category: 'Kids',
+                        imageUrl: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=300&fit=crop',
+                        url: 'https://example.com/spacetoon.m3u8',
                         isPremium: false,
                         isLive: true,
-                        quality: 'hd',
+                        quality: 'HD',
                         viewersCount: 3200,
-                        rating: 4.3
+                        rating: 4.3,
+                        membershipType: 'free'
                     }
                 ];
-                
-                // Mock ads data
+            }
+
+            loadMockCategories() {
+                this.categories = [
+                    { id: '1', name: 'News', nameAr: 'أخبار', icon: 'fas fa-newspaper', isActive: true },
+                    { id: '2', name: 'Sports', nameAr: 'رياضة', icon: 'fas fa-futbol', isActive: true },
+                    { id: '3', name: 'Entertainment', nameAr: 'ترفيه', icon: 'fas fa-masks-theater', isActive: true },
+                    { id: '4', name: 'Documentary', nameAr: 'وثائقي', icon: 'fas fa-film', isActive: true },
+                    { id: '5', name: 'Kids', nameAr: 'أطفال', icon: 'fas fa-child', isActive: true },
+                    { id: '6', name: 'Music', nameAr: 'موسيقى', icon: 'fas fa-music', isActive: true }
+                ];
+            }
+
+            loadMockAds() {
                 this.ads = [
                     {
                         id: '1',
@@ -2576,37 +2957,21 @@
                     },
                     {
                         id: '2',
-                        title: 'كأس العالم 2026',
-                        description: 'تابع جميع مباريات كأس العالم حصرياً على TvNa',
+                        title: 'أحدث الأخبار الرياضية',
+                        description: 'تابع أحدث الأخبار الرياضية والمباريات المباشرة',
                         imageUrl: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&h=400&fit=crop',
-                        link: '#worldcup',
+                        link: '#sports',
                         isActive: true
                     },
                     {
                         id: '3',
-                        title: 'أحدث المسلسلات العربية',
-                        description: 'شاهد أحدث المسلسلات والبرامج العربية قبل الجميع',
+                        title: 'أحدث البرامج الترفيهية',
+                        description: 'شاهد أحدث البرامج والمسلسلات العربية والعالمية',
                         imageUrl: 'https://images.unsplash.com/photo-1489599809194-4066b6b60934?w=800&h=400&fit=crop',
-                        link: '#series',
+                        link: '#entertainment',
                         isActive: true
                     }
                 ];
-                
-                // Mock categories data
-                this.categories = [
-                    { id: '1', name: 'أخبار', nameAr: 'أخبار', icon: 'fas fa-newspaper', isActive: true },
-                    { id: '2', name: 'رياضة', nameAr: 'رياضة', icon: 'fas fa-futbol', isActive: true },
-                    { id: '3', name: 'ترفيه', nameAr: 'ترفيه', icon: 'fas fa-masks-theater', isActive: true },
-                    { id: '4', name: 'وثائقي', nameAr: 'وثائقي', icon: 'fas fa-film', isActive: true },
-                    { id: '5', name: 'أطفال', nameAr: 'أطفال', icon: 'fas fa-child', isActive: true },
-                    { id: '6', name: 'موسيقى', nameAr: 'موسيقى', icon: 'fas fa-music', isActive: true }
-                ];
-                
-                this.updateStats();
-                this.renderAds();
-                this.renderFeaturedChannels();
-                this.renderAllChannels();
-                this.populateFilters();
             }
             
             checkUserSession() {
@@ -2614,6 +2979,7 @@
                 if (savedUser) {
                     this.currentUser = JSON.parse(savedUser);
                     this.updateUserUI();
+                    this.loadUserFavorites();
                 }
             }
             
@@ -2652,44 +3018,45 @@
             }
             
             async handleLogin() {
-                const email = document.getElementById('email').value;
+                const emailOrUsername = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 
-                if (!email || !password) {
+                if (!emailOrUsername || !password) {
                     this.showToast('يرجى ملء جميع الحقول', 'error');
                     return;
                 }
                 
-                if (!this.isValidEmail(email)) {
-                    this.showToast('يرجى إدخال بريد إلكتروني صحيح', 'error');
-                    return;
-                }
-                
-                // Simulate login process
+                // Show loading state
                 this.elements.submitLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
                 this.elements.submitLogin.disabled = true;
                 
-                setTimeout(() => {
-                    this.currentUser = {
-                        id: 'user_' + Date.now(),
-                        username: email.split('@')[0],
-                        email: email,
-                        isPremium: Math.random() > 0.5,
-                        joinDate: new Date(),
-                        avatar: null
-                    };
+                try {
+                    const user = await this.authenticateUser(emailOrUsername, password);
                     
-                    localStorage.setItem('tvna_user', JSON.stringify(this.currentUser));
-                    this.updateUserUI();
-                    this.hideLoginModal();
-                    this.showToast(`مرحباً ${this.currentUser.username}!`, 'success');
-                    
-                    // Reset form
-                    document.getElementById('email').value = '';
-                    document.getElementById('password').value = '';
-                    this.elements.submitLogin.innerHTML = 'دخول';
-                    this.elements.submitLogin.disabled = false;
-                }, 2000);
+                    if (user) {
+                        this.currentUser = user;
+                        localStorage.setItem('tvna_user', JSON.stringify(this.currentUser));
+                        this.updateUserUI();
+                        this.hideLoginModal();
+                        this.showToast(`مرحباً ${this.currentUser.username}!`, 'success');
+                        
+                        // Load user favorites
+                        await this.loadUserFavorites();
+                        
+                        // Reset form
+                        document.getElementById('email').value = '';
+                        document.getElementById('password').value = '';
+                    } else {
+                        this.showToast('اسم المستخدم أو كلمة المرور غير صحيحة', 'error');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    this.showToast('خطأ في تسجيل الدخول', 'error');
+                }
+                
+                // Reset button
+                this.elements.submitLogin.innerHTML = 'دخول';
+                this.elements.submitLogin.disabled = false;
             }
             
             updateUserUI() {
@@ -2698,7 +3065,7 @@
                     document.getElementById('welcomeSubtitle').textContent = 'استمتع الآن بأفضل القنوات المحلية والعالمية';
                     
                     this.elements.loginBtn.innerHTML = this.currentUser.avatar 
-                        ? `<img src="${this.currentUser.avatar}" alt="avatar">` 
+                        ? `<img src="${this.currentUser.avatar}" alt="avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">` 
                         : `<i class="fas fa-user-circle"></i>`;
                     this.elements.loginBtn.classList.add('logged-in');
                     this.elements.loginBtn.title = `مرحباً ${this.currentUser.username}`;
@@ -2733,7 +3100,7 @@
                     <div class="user-menu-item" style="padding: 0.5rem; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;" onclick="this.showSettings()">
                         <i class="fas fa-cog"></i> الإعدادات
                     </div>
-                    <div class="user-menu-item" style="padding: 0.5rem; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;" onclick="this.logout()">
+                    <div class="user-menu-item" style="padding: 0.5rem; cursor: pointer; border-radius: 8px; transition: all 0.3s ease;" onclick="tvnaApp.logout()">
                         <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
                     </div>
                 `;
@@ -2941,7 +3308,7 @@
             }
             
             updateStats() {
-                document.getElementById('channelsCount').textContent = this.channels.length + '+';
+                document.getElementById('channelsCount').textContent = this.channels.length;
                 document.getElementById('favoritesCount').textContent = this.favorites.length;
                 document.getElementById('usersCount').textContent = '25K+';
             }
@@ -3086,7 +3453,7 @@
                         <div class="channel-badges">
                             ${channel.isPremium ? '<div class="channel-badge premium"><i class="fas fa-crown"></i> مميز</div>' : ''}
                             ${channel.isLive ? '<div class="channel-badge live"><i class="fas fa-circle"></i> مباشر</div>' : ''}
-                            ${channel.quality === 'hd' ? '<div class="channel-badge hd">HD</div>' : ''}
+                            ${channel.quality === 'HD' || channel.quality === 'FHD' || channel.quality === '4K' ? `<div class="channel-badge hd">${channel.quality}</div>` : ''}
                         </div>
                         <div class="channel-overlay">
                             <div class="play-overlay">
@@ -3098,7 +3465,7 @@
                         <h3 class="channel-name">
                             <i class="fas fa-satellite"></i>
                             ${channel.nameAr}
-                            <span class="channel-category">${channel.category}</span>
+                            <span class="channel-category">${this.getCategoryNameAr(channel.category)}</span>
                         </h3>
                         <p class="channel-desc">${channel.descriptionAr}</p>
                         <div class="channel-stats">
@@ -3108,7 +3475,7 @@
                             </div>
                             <div class="stat">
                                 <i class="fas fa-star"></i>
-                                <span>${channel.rating}</span>
+                                <span>${channel.rating.toFixed(1)}</span>
                             </div>
                         </div>
                         <div class="channel-actions">
@@ -3145,6 +3512,11 @@
                 
                 return card;
             }
+
+            getCategoryNameAr(categoryName) {
+                const category = this.categories.find(c => c.name === categoryName);
+                return category ? category.nameAr : categoryName;
+            }
             
             handleChannelAction(channelId, action) {
                 const channel = this.channels.find(c => c.id === channelId);
@@ -3160,31 +3532,6 @@
                     case 'play':
                         this.playChannel(channel);
                         break;
-                }
-            }
-            
-            toggleFavorite(channel) {
-                if (!this.currentUser) {
-                    this.showLoginModal();
-                    return;
-                }
-                
-                const index = this.favorites.findIndex(f => f.id === channel.id);
-                
-                if (index === -1) {
-                    this.favorites.push(channel);
-                    this.showToast(`تم إضافة ${channel.nameAr} إلى المفضلة`, 'success');
-                } else {
-                    this.favorites.splice(index, 1);
-                    this.showToast(`تم إزالة ${channel.nameAr} من المفضلة`, 'warning');
-                }
-                
-                this.saveFavoritesToStorage();
-                this.updateStats();
-                this.updateFavoriteButtons();
-                
-                if (this.currentTab === 'favorites') {
-                    this.renderFavorites();
                 }
             }
             
@@ -3205,6 +3552,7 @@
             }
             
             playChannel(channel) {
+                // Check user permissions
                 if (channel.isPremium && (!this.currentUser || !this.currentUser.isPremium)) {
                     this.showPremiumModal();
                     return;
@@ -3212,6 +3560,14 @@
                 
                 if (!this.currentUser) {
                     this.showLoginModal();
+                    return;
+                }
+                
+                // Check if user has access to this specific channel (for VIP users)
+                if (this.currentUser.membershipType === 'vip' && 
+                    this.currentUser.allowedChannels.length > 0 && 
+                    !this.currentUser.allowedChannels.includes(channel.id)) {
+                    this.showToast('ليس لديك صلاحية لمشاهدة هذه القناة', 'warning');
                     return;
                 }
                 
@@ -3223,7 +3579,7 @@
                 document.body.style.overflow = 'hidden';
                 
                 document.getElementById('playerTitle').textContent = channel.nameAr;
-                document.getElementById('playerCategory').textContent = channel.category;
+                document.getElementById('playerCategory').textContent = this.getCategoryNameAr(channel.category);
                 
                 // Initialize video player
                 try {
@@ -3290,7 +3646,7 @@
                 container.innerHTML = '';
                 
                 this.categories.forEach(category => {
-                    const categoryChannels = this.channels.filter(c => c.category === category.nameAr);
+                    const categoryChannels = this.channels.filter(c => c.category === category.name);
                     
                     const card = document.createElement('div');
                     card.className = 'channel-card fade-in';
@@ -3317,7 +3673,7 @@
                                 </div>
                             </div>
                             <div class="channel-actions">
-                                <div class="channel-action-btn play-btn" data-category="${category.nameAr}">
+                                <div class="channel-action-btn play-btn" data-category="${category.name}">
                                     <i class="fas fa-eye"></i>
                                     <span>عرض القنوات</span>
                                 </div>
@@ -3326,7 +3682,7 @@
                     `;
                     
                     card.querySelector('.play-btn').addEventListener('click', () => {
-                        this.showCategoryChannels(category.nameAr);
+                        this.showCategoryChannels(category.name);
                     });
                     
                     container.appendChild(card);
@@ -3370,7 +3726,7 @@
                 const container = document.getElementById('newsContent');
                 if (!container) return;
                 
-                const newsChannels = this.channels.filter(c => c.category === 'أخبار' || c.category === 'رياضة');
+                const newsChannels = this.channels.filter(c => c.category === 'News' || c.category === 'Sports');
                 this.renderChannelsInContainer(container, newsChannels);
             }
             
@@ -3384,7 +3740,7 @@
                 // Add category options
                 this.categories.forEach(category => {
                     const option = document.createElement('option');
-                    option.value = category.nameAr;
+                    option.value = category.name;
                     option.textContent = category.nameAr;
                     categoryFilter.appendChild(option);
                 });
@@ -3568,6 +3924,7 @@
                 setTimeout(() => {
                     if (this.currentUser) {
                         this.currentUser.isPremium = true;
+                        this.currentUser.membershipType = 'premium';
                         localStorage.setItem('tvna_user', JSON.stringify(this.currentUser));
                         this.updateUserUI();
                     }
@@ -3701,7 +4058,8 @@
         window.tvnaApp = {
             selectSearchResult: (id) => tvnaApp.selectSearchResult(id),
             showAllSearchResults: () => tvnaApp.showAllSearchResults(),
-            handlePremiumUpgrade: (btn) => tvnaApp.handlePremiumUpgrade(btn)
+            handlePremiumUpgrade: (btn) => tvnaApp.handlePremiumUpgrade(btn),
+            logout: () => tvnaApp.logout()
         };
     </script>
 </body>
