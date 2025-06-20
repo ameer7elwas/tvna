@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TvNa Web - تيڤي نا ويب</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --dark: #1e1e1e;
+            --light: #f8f9fa;
+            --danger: #e63946;
+            --success: #2a9d8f;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0a0a0a;
+            color: white;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* التصميم الداكن */
+        .dark-bg {
+            background-color: var(--dark);
+        }
+        
+        .card {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        /* شريط التنقل */
+        .navbar {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* القنوات المباشرة */
+        .live-channels {
+            padding: 50px 0;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        
+        .channel-card {
+            position: relative;
+        }
+        
+        .channel-thumbnail {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .channel-info {
+            padding: 15px;
+        }
+        
+        .channel-name {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .channel-category {
+            background: var(--primary);
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        
+        .play-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .channel-card:hover .play-btn {
+            opacity: 1;
+        }
+        
+        /* الإعلانات المتحركة */
+        .ads-carousel {
+            padding: 30px 0;
+        }
+        
+        .carousel-container {
+            overflow: hidden;
+            border-radius: 15px;
+            height: 250px;
+            position: relative;
+        }
+        
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        
+        .ad-slide {
+            min-width: 100%;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .ad-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 20px;
+            color: white;
+        }
+        
+        /* لوحة التحكم */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 25px;
+            padding: 40px 0;
+        }
+        
+        .sidebar {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .sidebar-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .menu-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: var(--primary);
+        }
+        
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .stat-card {
+            padding: 20px;
+            text-align: center;
+            border-radius: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        /* تسجيل الدخول */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        }
+        
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            border-radius: 20px;
+            background: rgba(30, 30, 46, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .auth-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        /* التكيف مع الجوال */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .channels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .navbar-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شاشة تسجيل الدخول -->
+    <div id="auth-screen" class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">تسجيل الدخول إلى TvNa</h1>
+            <div class="form-group">
+                <input type="text" id="username" class="form-control" placeholder="اسم المستخدم">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" class="form-control" placeholder="كلمة المرور">
+            </div>
+            <button id="login-btn" class="btn btn-primary">دخول</button>
+            <p style="text-align: center; margin-top: 20px;">
+                ليس لديك حساب؟ <a href="#" id="register-link">تسجيل جديد</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- واجهة الموقع -->
+    <div id="main-app" style="display: none;">
+        <!-- شريط التنقل -->
+        <nav class="navbar">
+            <div class="container navbar-content">
+                <div class="logo">
+                    <span class="logo-icon">📺</span>
+                    <span>TvNa Web</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link">الرئيسية</a>
+                    <a href="#" class="nav-link">القنوات</a>
+                    <a href="#" class="nav-link">المفضلة</a>
+                    <a href="#" class="nav-link">الأخبار</a>
+                    <a href="#" class="nav-link">الإعدادات</a>
+                    <a href="#" id="logout-btn" class="nav-link">تسجيل الخروج</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- محتوى الصفحة -->
+        <div class="container">
+            <!-- القنوات المباشرة -->
+            <section class="live-channels">
+                <h2 class="section-title">
+                    <span>📡</span>
+                    القنوات المباشرة
+                </h2>
+                <div class="channels-grid" id="channels-container">
+                    <!-- سيتم ملؤها بالبيانات -->
+                </div>
+            </section>
+
+            <!-- الإعلانات -->
+            <section class="ads-carousel">
+                <h2 class="section-title">
+                    <span>📢</span>
+                    إعلانات TvNa
+                </h2>
+                <div class="carousel-container">
+                    <div class="carousel-track" id="ads-carousel">
+                        <!-- سيتم ملؤها بالبيانات -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- لوحة التحكم (للمشرفين) -->
+            <section class="dashboard">
+                <div class="sidebar">
+                    <h3 class="sidebar-title">لوحة التحكم</h3>
+                    <ul class="sidebar-menu">
+                        <li class="menu-item active">الإحصائيات</li>
+                        <li class="menu-item">إدارة القنوات</li>
+                        <li class="menu-item">إدارة الإعلانات</li>
+                        <li class="menu-item">إدارة المستخدمين</li>
+                        <li class="menu-item">التسجيلات المجدولة</li>
+                        <li class="menu-item">الإعدادات</li>
+                    </ul>
+                </div>
+                <div class="dashboard-content">
+                    <div class="card stat-card" style="background: linear-gradient(135deg, #4361ee, #3a0ca3);">
+                        <h3>عدد القنوات</h3>
+                        <div class="stat-number" id="channels-count">0</div>
+                        <p>قناة مباشرة</p>
+                    </div>
+                    <div class="card stat-card" style="background: linear-gradient(135deg, #f72585, #b5179e);">
+                        <h3>المشاهدات</h3>
+                        <div class="stat-number" id="views-count">0</div>
+                        <p>مشاهدة اليوم</p>
+                    </div>
+                    <div class="card stat-card" style="background: linear-gradient(135deg, #4cc9f0, #4895ef);">
+                        <h3>المستخدمين</h3>
+                        <div class="stat-number" id="users-count">0</div>
+                        <p>مستخدم نشط</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // تكوين Supabase
+        const SUPABASE_URL = 'https://vpvvjascwgivdjyyhzwp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // عناصر DOM
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const registerLink = document.getElementById('register-link');
+        const channelsContainer = document.getElementById('channels-container');
+        const adsCarousel = document.getElementById('ads-carousel');
+        const channelsCount = document.getElementById('channels-count');
+        const viewsCount = document.getElementById('views-count');
+        const usersCount = document.getElementById('users-count');
+        
+        // حالة المستخدم
+        let currentUser = null;
+        
+        // تسجيل الدخول
+        loginBtn.addEventListener('click', async () => {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (username && password) {
+                try {
+                    // تشفير كلمة المرور
+                    const encoder = new TextEncoder();
+                    const data = encoder.encode(password);
+                    const passwordHash = btoa(String.fromCharCode(...new Uint8Array(data)));
+                    
+                    // استعلام Supabase
+                    const { data: users, error } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('username', username)
+                        .eq('password_hash', passwordHash)
+                        .eq('is_active', true);
+                    
+                    if (error) throw error;
+                    
+                    if (users && users.length > 0) {
+                        currentUser = users[0];
+                        authScreen.style.display = 'none';
+                        mainApp.style.display = 'block';
+                        loadDashboardData();
+                        loadChannels();
+                        loadAds();
+                    } else {
+                        alert('بيانات الدخول غير صحيحة');
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('خطأ في الاتصال بالخادم');
+                }
+            } else {
+                alert('يرجى ملء جميع الحقول');
+            }
+        });
+        
+        // تسجيل الخروج
+        logoutBtn.addEventListener('click', () => {
+            currentUser = null;
+            mainApp.style.display = 'none';
+            authScreen.style.display = 'flex';
+        });
+        
+        // تحميل القنوات
+        async function loadChannels() {
+            try {
+                const { data: channels, error } = await supabase
+                    .from('channels')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('order_index', { ascending: true });
+                
+                if (error) throw error;
+                
+                channelsContainer.innerHTML = '';
+                
+                channels.forEach(channel => {
+                    const channelCard = `
+                        <div class="card channel-card">
+                            <img src="${channel.image_url}" alt="${channel.name}" class="channel-thumbnail">
+                            <div class="play-btn">▶</div>
+                            <div class="channel-info">
+                                <h3 class="channel-name">${channel.name}</h3>
+                                <span class="channel-category">${channel.category}</span>
+                            </div>
+                        </div>
+                    `;
+                    channelsContainer.innerHTML += channelCard;
+                });
+                
+                // إضافة مستمعات الأحداث للقنوات
+                document.querySelectorAll('.channel-card').forEach((card, index) => {
+                    card.addEventListener('click', () => {
+                        playChannel(channels[index]);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading channels:', error);
+            }
+        }
+        
+        // تحميل الإعلانات
+        async function loadAds() {
+            try {
+                const now = new Date().toISOString();
+                const { data: ads, error } = await supabase
+                    .from('advertisements')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('priority', { ascending: false });
+                
+                if (error) throw error;
+                
+                adsCarousel.innerHTML = '';
+                
+                ads.forEach(ad => {
+                    const adSlide = `
+                        <div class="ad-slide" style="background-image: url('${ad.image_url}')">
+                            <div class="ad-overlay">
+                                <h3>${ad.title}</h3>
+                                <p>${ad.description}</p>
+                            </div>
+                        </div>
+                    `;
+                    adsCarousel.innerHTML += adSlide;
+                });
+                
+                // بدء تشغيل الكاروسيل
+                startCarousel();
+                
+            } catch (error) {
+                console.error('Error loading ads:', error);
+            }
+        }
+        
+        // تشغيل الكاروسيل
+        function startCarousel() {
+            let currentIndex = 0;
+            const slides = document.querySelectorAll('.ad-slide');
+            const track = document.querySelector('.carousel-track');
+            
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % slides.length;
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }, 5000);
+        }
+        
+        // تحميل بيانات لوحة التحكم
+        async function loadDashboardData() {
+            try {
+                // إحصائيات القنوات
+                const { count: channels, error: channelsError } = await supabase
+                    .from('channels')
+                    .select('*', { count: 'exact' })
+                    .eq('is_active', true);
+                
+                if (!channelsError) channelsCount.textContent = channels;
+                
+                // إحصائيات المشاهدات
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const { count: views, error: viewsError } = await supabase
+                    .from('view_stats')
+                    .select('*', { count: 'exact' })
+                    .gte('created_at', today.toISOString());
+                
+                if (!viewsError) viewsCount.textContent = views;
+                
+                // إحصائيات المستخدمين
+                const { count: users, error: usersError } = await supabase
+                    .from('users')
+                    .select('*', { count: 'exact' })
+                    .eq('is_active', true);
+                
+                if (!usersError) usersCount.textContent = users;
+                
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+        
+        // تشغيل القناة
+        function playChannel(channel) {
+            alert(`جاري تشغيل قناة ${channel.name}...`);
+            // هنا سيتم تنفيذ تشغيل الفيديو باستخدام HLS.js أو أي مكتبة أخرى
+        }
+        
+        // تسجيل حساب جديد
+        registerLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            const username = prompt('اسم المستخدم:');
+            const email = prompt('البريد الإلكتروني:');
+            const password = prompt('كلمة المرور:');
+            
+            if (username && email && password) {
+                // تنفيذ عملية التسجيل هنا
+                alert('تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول');
+            }
+        });
+    </script>
+</body>
+</html>
