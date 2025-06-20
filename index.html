@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TvNa Web - تيڤي نا ويب</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <title>TvNa - تيڤي نا ويب</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary: #4361ee;
@@ -23,8 +23,9 @@
         }
         
         body {
-            background-color: #0a0a0a;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
             color: white;
+            min-height: 100vh;
         }
         
         .container {
@@ -34,30 +35,15 @@
             padding: 0 15px;
         }
         
-        /* التصميم الداكن */
-        .dark-bg {
-            background-color: var(--dark);
-        }
-        
-        .card {
-            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        
         /* شريط التنقل */
         .navbar {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: rgba(30, 30, 46, 0.8);
+            backdrop-filter: blur(10px);
             padding: 15px 0;
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .navbar-content {
@@ -76,27 +62,29 @@
         
         .logo-icon {
             font-size: 2rem;
+            color: var(--primary);
         }
         
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 15px;
         }
         
         .nav-link {
-            color: white;
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             padding: 8px 15px;
             border-radius: 8px;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
         
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .nav-link:hover, .nav-link.active {
+            background: var(--primary);
+            color: white;
         }
         
-        /* القنوات المباشرة */
-        .live-channels {
+        /* بطاقات القنوات */
+        .section {
             padding: 50px 0;
         }
         
@@ -110,23 +98,31 @@
         
         .channels-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 25px;
         }
         
         .channel-card {
-            position: relative;
+            background: rgba(30, 30, 46, 0.6);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .channel-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
         
         .channel-thumbnail {
             width: 100%;
             height: 160px;
             object-fit: cover;
-            border-radius: 15px 15px 0 0;
         }
         
         .channel-info {
-            padding: 15px;
+            padding: 20px;
         }
         
         .channel-name {
@@ -137,9 +133,17 @@
         .channel-category {
             background: var(--primary);
             display: inline-block;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 0.8rem;
+        }
+        
+        .channel-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
         }
         
         .play-btn {
@@ -159,33 +163,33 @@
             transition: opacity 0.3s;
         }
         
-        .channel-card:hover .play-btn {
+        .channel-thumb-container:hover .play-btn {
             opacity: 1;
         }
         
-        /* الإعلانات المتحركة */
+        /* الكاروسيل */
         .ads-carousel {
-            padding: 30px 0;
-        }
-        
-        .carousel-container {
-            overflow: hidden;
+            margin: 40px 0;
             border-radius: 15px;
-            height: 250px;
+            overflow: hidden;
+            height: 300px;
             position: relative;
-        }
-        
-        .carousel-track {
-            display: flex;
-            transition: transform 0.5s ease;
         }
         
         .ad-slide {
-            min-width: 100%;
-            height: 250px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-size: cover;
             background-position: center;
-            position: relative;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        .ad-slide.active {
+            opacity: 1;
         }
         
         .ad-overlay {
@@ -193,72 +197,21 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 20px;
-            color: white;
-        }
-        
-        /* لوحة التحكم */
-        .dashboard {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 25px;
-            padding: 40px 0;
-        }
-        
-        .sidebar {
-            background: #1a1a1a;
-            border-radius: 15px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
             padding: 20px;
         }
         
-        .sidebar-title {
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #333;
+        .ad-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
         }
         
-        .sidebar-menu {
-            list-style: none;
-        }
-        
-        .menu-item {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        .menu-item:hover, .menu-item.active {
-            background: var(--primary);
-        }
-        
-        .dashboard-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .stat-card {
-            padding: 20px;
-            text-align: center;
-            border-radius: 15px;
-        }
-        
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        /* تسجيل الدخول */
+        /* شاشة تسجيل الدخول */
         .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
         }
         
         .auth-card {
@@ -268,11 +221,13 @@
             border-radius: 20px;
             background: rgba(30, 30, 46, 0.8);
             backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
         }
         
         .auth-title {
             text-align: center;
             margin-bottom: 30px;
+            font-size: 1.8rem;
         }
         
         .form-group {
@@ -312,22 +267,17 @@
         
         /* التكيف مع الجوال */
         @media (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            
-            .channels-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-            
             .navbar-content {
                 flex-direction: column;
                 gap: 15px;
             }
             
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
+            .channels-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+            }
+            
+            .auth-card {
+                padding: 20px;
             }
         }
     </style>
@@ -344,8 +294,8 @@
                 <input type="password" id="password" class="form-control" placeholder="كلمة المرور">
             </div>
             <button id="login-btn" class="btn btn-primary">دخول</button>
-            <p style="text-align: center; margin-top: 20px;">
-                ليس لديك حساب؟ <a href="#" id="register-link">تسجيل جديد</a>
+            <p style="text-align: center; margin-top: 20px; color: rgba(255, 255, 255, 0.7);">
+                ليس لديك حساب؟ <a href="#" id="register-link" style="color: var(--primary);">تسجيل جديد</a>
             </p>
         </div>
     </div>
@@ -360,11 +310,10 @@
                     <span>TvNa Web</span>
                 </div>
                 <div class="nav-links">
-                    <a href="#" class="nav-link">الرئيسية</a>
+                    <a href="#" class="nav-link active">الرئيسية</a>
                     <a href="#" class="nav-link">القنوات</a>
                     <a href="#" class="nav-link">المفضلة</a>
                     <a href="#" class="nav-link">الأخبار</a>
-                    <a href="#" class="nav-link">الإعدادات</a>
                     <a href="#" id="logout-btn" class="nav-link">تسجيل الخروج</a>
                 </div>
             </div>
@@ -373,7 +322,7 @@
         <!-- محتوى الصفحة -->
         <div class="container">
             <!-- القنوات المباشرة -->
-            <section class="live-channels">
+            <section class="section">
                 <h2 class="section-title">
                     <span>📡</span>
                     القنوات المباشرة
@@ -384,47 +333,13 @@
             </section>
 
             <!-- الإعلانات -->
-            <section class="ads-carousel">
+            <section class="section">
                 <h2 class="section-title">
                     <span>📢</span>
                     إعلانات TvNa
                 </h2>
-                <div class="carousel-container">
-                    <div class="carousel-track" id="ads-carousel">
-                        <!-- سيتم ملؤها بالبيانات -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- لوحة التحكم (للمشرفين) -->
-            <section class="dashboard">
-                <div class="sidebar">
-                    <h3 class="sidebar-title">لوحة التحكم</h3>
-                    <ul class="sidebar-menu">
-                        <li class="menu-item active">الإحصائيات</li>
-                        <li class="menu-item">إدارة القنوات</li>
-                        <li class="menu-item">إدارة الإعلانات</li>
-                        <li class="menu-item">إدارة المستخدمين</li>
-                        <li class="menu-item">التسجيلات المجدولة</li>
-                        <li class="menu-item">الإعدادات</li>
-                    </ul>
-                </div>
-                <div class="dashboard-content">
-                    <div class="card stat-card" style="background: linear-gradient(135deg, #4361ee, #3a0ca3);">
-                        <h3>عدد القنوات</h3>
-                        <div class="stat-number" id="channels-count">0</div>
-                        <p>قناة مباشرة</p>
-                    </div>
-                    <div class="card stat-card" style="background: linear-gradient(135deg, #f72585, #b5179e);">
-                        <h3>المشاهدات</h3>
-                        <div class="stat-number" id="views-count">0</div>
-                        <p>مشاهدة اليوم</p>
-                    </div>
-                    <div class="card stat-card" style="background: linear-gradient(135deg, #4cc9f0, #4895ef);">
-                        <h3>المستخدمين</h3>
-                        <div class="stat-number" id="users-count">0</div>
-                        <p>مستخدم نشط</p>
-                    </div>
+                <div class="ads-carousel" id="ads-carousel">
+                    <!-- سيتم ملؤها بالبيانات -->
                 </div>
             </section>
         </div>
@@ -445,9 +360,6 @@
         const registerLink = document.getElementById('register-link');
         const channelsContainer = document.getElementById('channels-container');
         const adsCarousel = document.getElementById('ads-carousel');
-        const channelsCount = document.getElementById('channels-count');
-        const viewsCount = document.getElementById('views-count');
-        const usersCount = document.getElementById('users-count');
         
         // حالة المستخدم
         let currentUser = null;
@@ -459,10 +371,8 @@
             
             if (username && password) {
                 try {
-                    // تشفير كلمة المرور
-                    const encoder = new TextEncoder();
-                    const data = encoder.encode(password);
-                    const passwordHash = btoa(String.fromCharCode(...new Uint8Array(data)));
+                    // تشفير كلمة المرور (Base64)
+                    const passwordHash = btoa(password);
                     
                     // استعلام Supabase
                     const { data: users, error } = await supabase
@@ -478,7 +388,6 @@
                         currentUser = users[0];
                         authScreen.style.display = 'none';
                         mainApp.style.display = 'block';
-                        loadDashboardData();
                         loadChannels();
                         loadAds();
                     } else {
@@ -503,11 +412,18 @@
         // تحميل القنوات
         async function loadChannels() {
             try {
-                const { data: channels, error } = await supabase
+                // جلب القنوات حسب نوع عضوية المستخدم
+                let query = supabase
                     .from('channels')
                     .select('*')
                     .eq('is_active', true)
                     .order('order_index', { ascending: true });
+                
+                if (!currentUser || !currentUser.is_premium) {
+                    query = query.eq('is_premium', false);
+                }
+                
+                const { data: channels, error } = await query;
                 
                 if (error) throw error;
                 
@@ -515,12 +431,20 @@
                 
                 channels.forEach(channel => {
                     const channelCard = `
-                        <div class="card channel-card">
-                            <img src="${channel.image_url}" alt="${channel.name}" class="channel-thumbnail">
-                            <div class="play-btn">▶</div>
+                        <div class="channel-card">
+                            <div class="channel-thumb-container" style="position: relative;">
+                                <img src="${channel.image_url}" alt="${channel.name}" class="channel-thumbnail">
+                                <div class="play-btn" data-channel-id="${channel.id}">
+                                    <span>▶</span>
+                                </div>
+                            </div>
                             <div class="channel-info">
                                 <h3 class="channel-name">${channel.name}</h3>
                                 <span class="channel-category">${channel.category}</span>
+                                <div class="channel-stats">
+                                    <span>👁️ ${channel.viewers_count}</span>
+                                    <span>⭐ ${channel.rating}</span>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -528,21 +452,22 @@
                 });
                 
                 // إضافة مستمعات الأحداث للقنوات
-                document.querySelectorAll('.channel-card').forEach((card, index) => {
-                    card.addEventListener('click', () => {
-                        playChannel(channels[index]);
+                document.querySelectorAll('.play-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const channelId = e.currentTarget.getAttribute('data-channel-id');
+                        playChannel(channelId);
                     });
                 });
                 
             } catch (error) {
                 console.error('Error loading channels:', error);
+                channelsContainer.innerHTML = `<p style="text-align: center; color: var(--danger);">حدث خطأ أثناء تحميل القنوات</p>`;
             }
         }
         
         // تحميل الإعلانات
         async function loadAds() {
             try {
-                const now = new Date().toISOString();
                 const { data: ads, error } = await supabase
                     .from('advertisements')
                     .select('*')
@@ -553,11 +478,12 @@
                 
                 adsCarousel.innerHTML = '';
                 
-                ads.forEach(ad => {
+                ads.forEach((ad, index) => {
                     const adSlide = `
-                        <div class="ad-slide" style="background-image: url('${ad.image_url}')">
+                        <div class="ad-slide ${index === 0 ? 'active' : ''}" 
+                             style="background-image: url('${ad.image_url}')">
                             <div class="ad-overlay">
-                                <h3>${ad.title}</h3>
+                                <h3 class="ad-title">${ad.title}</h3>
                                 <p>${ad.description}</p>
                             </div>
                         </div>
@@ -577,52 +503,20 @@
         function startCarousel() {
             let currentIndex = 0;
             const slides = document.querySelectorAll('.ad-slide');
-            const track = document.querySelector('.carousel-track');
+            const slideCount = slides.length;
+            
+            if (slideCount === 0) return;
             
             setInterval(() => {
-                currentIndex = (currentIndex + 1) % slides.length;
-                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                slides[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % slideCount;
+                slides[currentIndex].classList.add('active');
             }, 5000);
         }
         
-        // تحميل بيانات لوحة التحكم
-        async function loadDashboardData() {
-            try {
-                // إحصائيات القنوات
-                const { count: channels, error: channelsError } = await supabase
-                    .from('channels')
-                    .select('*', { count: 'exact' })
-                    .eq('is_active', true);
-                
-                if (!channelsError) channelsCount.textContent = channels;
-                
-                // إحصائيات المشاهدات
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                const { count: views, error: viewsError } = await supabase
-                    .from('view_stats')
-                    .select('*', { count: 'exact' })
-                    .gte('created_at', today.toISOString());
-                
-                if (!viewsError) viewsCount.textContent = views;
-                
-                // إحصائيات المستخدمين
-                const { count: users, error: usersError } = await supabase
-                    .from('users')
-                    .select('*', { count: 'exact' })
-                    .eq('is_active', true);
-                
-                if (!usersError) usersCount.textContent = users;
-                
-            } catch (error) {
-                console.error('Error loading dashboard data:', error);
-            }
-        }
-        
         // تشغيل القناة
-        function playChannel(channel) {
-            alert(`جاري تشغيل قناة ${channel.name}...`);
+        function playChannel(channelId) {
+            alert(`جاري تحضير القناة... (ID: ${channelId})`);
             // هنا سيتم تنفيذ تشغيل الفيديو باستخدام HLS.js أو أي مكتبة أخرى
         }
         
