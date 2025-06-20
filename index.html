@@ -6,6 +6,7 @@
     <title>TvNa - تيڤي نا | قنوات تلفزيونية مباشرة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * {
             margin: 0;
@@ -59,6 +60,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            cursor: pointer;
         }
 
         .logo-icon {
@@ -128,12 +130,11 @@
             overflow: hidden;
             border: 2px solid var(--primary);
             cursor: pointer;
-        }
-
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(67, 97, 238, 0.3);
+            font-size: 1.2rem;
         }
 
         /* Hero Section */
@@ -493,6 +494,156 @@
             background: linear-gradient(45deg, var(--secondary), var(--primary));
         }
 
+        /* Login Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(67, 97, 238, 0.5);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--accent);
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        /* Video Player */
+        .video-player {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 3000;
+        }
+
+        #player {
+            width: 100%;
+            height: 100%;
+        }
+
+        .player-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .player-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .player-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: var(--gray);
+        }
+
+        .spinner {
+            border: 4px solid rgba(67, 97, 238, 0.3);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* Footer */
         footer {
             background: rgba(10, 10, 10, 0.9);
@@ -638,7 +789,7 @@
 <body>
     <!-- Header -->
     <header>
-        <div class="logo">
+        <div class="logo" id="homeBtn">
             <div class="logo-icon">
                 <i class="fas fa-tv"></i>
             </div>
@@ -646,328 +797,185 @@
         </div>
         
         <nav class="nav-links">
-            <div class="nav-link active">الرئيسية</div>
-            <div class="nav-link">القنوات</div>
-            <div class="nav-link">التصنيفات</div>
-            <div class="nav-link">المفضلة</div>
-            <div class="nav-link">الأخبار</div>
-            <div class="nav-link">التسجيلات</div>
+            <div class="nav-link active" data-tab="home">الرئيسية</div>
+            <div class="nav-link" data-tab="channels">القنوات</div>
+            <div class="nav-link" data-tab="categories">التصنيفات</div>
+            <div class="nav-link" data-tab="favorites">المفضلة</div>
+            <div class="nav-link" data-tab="news">الأخبار</div>
         </nav>
         
         <div class="user-actions">
-            <div class="action-btn">
+            <div class="action-btn" id="searchBtn">
                 <i class="fas fa-search"></i>
             </div>
-            <div class="action-btn">
+            <div class="action-btn" id="themeBtn">
                 <i class="fas fa-moon"></i>
             </div>
-            <div class="action-btn">
+            <div class="user-avatar" id="loginBtn">
                 <i class="fas fa-user"></i>
-            </div>
-            <div class="user-avatar">
-                <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
             </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="welcome-card">
-            <h2 class="welcome-title">مرحباً بك في TvNa</h2>
-            <p class="welcome-subtitle">استمتع بأفضل تجربة مشاهدة مع آلاف القنوات المحلية والعالمية</p>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
+    <!-- Main Content -->
+    <main id="mainContent">
+        <!-- Home Tab -->
+        <section id="homeTab" class="tab-content active">
+            <div class="hero">
+                <div class="welcome-card">
+                    <h2 class="welcome-title" id="welcomeTitle">مرحباً بك في TvNa</h2>
+                    <p class="welcome-subtitle" id="welcomeSubtitle">استمتع بأفضل تجربة مشاهدة مع آلاف القنوات المحلية والعالمية</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tv"></i>
+                            </div>
+                            <div class="stat-value" id="channelsCount">0</div>
+                            <div class="stat-label">قناة تلفزيونية</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="stat-value" id="favoritesCount">0</div>
+                            <div class="stat-label">قناة مفضلة</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="stat-value" id="adsCount">0</div>
+                            <div class="stat-label">إعلانات نشطة</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-ad"></i>
+                    </div>
+                    <h2 class="section-title">إعلانات TvNa</h2>
+                    <div class="live-badge">مباشر</div>
+                </div>
+                
+                <div class="ads-carousel" id="adsCarousel">
+                    <!-- Ads will be loaded here -->
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h2 class="section-title">القنوات المميزة</h2>
+                </div>
+                
+                <div class="channels-grid" id="featuredChannels">
+                    <!-- Featured channels will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Channels Tab -->
+        <section id="channelsTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
                         <i class="fas fa-tv"></i>
                     </div>
-                    <div class="stat-value">250+</div>
-                    <div class="stat-label">قناة تلفزيونية</div>
+                    <h2 class="section-title">جميع القنوات</h2>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-icon">
+                <div class="channels-grid" id="allChannels">
+                    <!-- All channels will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Tab -->
+        <section id="categoriesTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <h2 class="section-title">التصنيفات</h2>
+                </div>
+                
+                <div class="channels-grid" id="categoriesContent">
+                    <!-- Categories will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Favorites Tab -->
+        <section id="favoritesTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
                         <i class="fas fa-heart"></i>
                     </div>
-                    <div class="stat-value">18</div>
-                    <div class="stat-label">قناة مفضلة</div>
+                    <h2 class="section-title">قنواتي المفضلة</h2>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-bullhorn"></i>
-                    </div>
-                    <div class="stat-value">7</div>
-                    <div class="stat-label">إعلانات نشطة</div>
+                <div class="channels-grid" id="favoritesContent">
+                    <!-- Favorites will be loaded here -->
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Advertisement Carousel -->
-    <section class="section">
-        <div class="section-header">
-            <div class="section-icon">
-                <i class="fas fa-ad"></i>
-            </div>
-            <h2 class="section-title">إعلانات TvNa</h2>
-            <div class="live-badge">مباشر</div>
-        </div>
-        
-        <div class="ads-carousel">
-            <div class="ad-slide active" style="background-image: url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
-                <div class="ad-content">
-                    <div class="ad-badge">مميز</div>
-                    <h3 class="ad-title">عرض خاص لمشتركي TvNa</h3>
-                    <p class="ad-desc">احصل على خصم 50% على الاشتراك السنوي واستمتع بجميع القنوات بدون إعلانات</p>
-                    <a href="#" class="ad-link">
-                        <span>احصل على العرض الآن</span>
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
+        <!-- News Tab -->
+        <section id="newsTab" class="tab-content">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h2 class="section-title">آخر الأخبار الرياضية</h2>
+                </div>
+                
+                <div class="channels-grid" id="newsContent">
+                    <!-- News will be loaded here -->
                 </div>
             </div>
-            
-            <div class="ad-slide" style="background-image: url('https://images.unsplash.com/photo-1583468982228-19f19164aee2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80');">
-                <div class="ad-content">
-                    <div class="ad-badge">جديد</div>
-                    <h3 class="ad-title">القنوات الرياضية الجديدة</h3>
-                    <p class="ad-desc">شاهد أهم المباريات والبطولات على القنوات الرياضية المميزة</p>
-                    <a href="#" class="ad-link">
-                        <span>اكتشف القنوات</span>
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Featured Channels -->
-    <section class="section">
-        <div class="section-header">
-            <div class="section-icon">
-                <i class="fas fa-star"></i>
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeModal">&times;</div>
+            <h2 class="login-title">تسجيل الدخول</h2>
+            
+            <div class="input-group">
+                <label for="email">البريد الإلكتروني</label>
+                <input type="email" id="email" placeholder="ادخل بريدك الإلكتروني">
             </div>
-            <h2 class="section-title">القنوات المميزة</h2>
+            
+            <div class="input-group">
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" placeholder="ادخل كلمة المرور">
+            </div>
+            
+            <button class="login-btn" id="submitLogin">دخول</button>
         </div>
-        
-        <div class="channels-grid">
-            <!-- Channel 1 -->
-            <div class="channel-card">
-                <div class="channel-header">
-                    <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="channel-image" alt="beIN Sports">
-                    <div class="channel-badge">مميز</div>
-                    <div class="channel-live">مباشر</div>
-                </div>
-                <div class="channel-content">
-                    <h3 class="channel-name">
-                        <i class="fas fa-satellite"></i>
-                        beIN Sports HD
-                        <span class="channel-category">رياضة</span>
-                    </h3>
-                    <p class="channel-desc">القناة الرياضية الأولى في العالم العربي، بث مباشر للمباريات والبطولات</p>
-                    
-                    <div class="channel-stats">
-                        <div class="stat">
-                            <i class="fas fa-eye"></i>
-                            <span>24.5K مشاهد</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-star"></i>
-                            <span>4.8</span>
-                        </div>
-                    </div>
-                    
-                    <div class="channel-actions">
-                        <div class="action-btn">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-record-vinyl"></i>
-                        </div>
-                        <div class="action-btn play-btn">
-                            <i class="fas fa-play"></i>
-                            <span>مشاهدة</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Channel 2 -->
-            <div class="channel-card">
-                <div class="channel-header">
-                    <img src="https://images.unsplash.com/photo-1598899134739-24c46f58b8c0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="channel-image" alt="MBC">
-                    <div class="channel-live">مباشر</div>
-                </div>
-                <div class="channel-content">
-                    <h3 class="channel-name">
-                        <i class="fas fa-satellite"></i>
-                        MBC 1 HD
-                        <span class="channel-category">ترفيه</span>
-                    </h3>
-                    <p class="channel-desc">القناة الرائدة في مجال الترفيه، أحدث المسلسلات والبرامج الحصرية</p>
-                    
-                    <div class="channel-stats">
-                        <div class="stat">
-                            <i class="fas fa-eye"></i>
-                            <span>18.2K مشاهد</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-star"></i>
-                            <span>4.6</span>
-                        </div>
-                    </div>
-                    
-                    <div class="channel-actions">
-                        <div class="action-btn">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-record-vinyl"></i>
-                        </div>
-                        <div class="action-btn play-btn">
-                            <i class="fas fa-play"></i>
-                            <span>مشاهدة</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Channel 3 -->
-            <div class="channel-card">
-                <div class="channel-header">
-                    <img src="https://images.unsplash.com/photo-1579803074459-3b26dd46a031?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="channel-image" alt="Al Jazeera">
-                    <div class="channel-badge">مميز</div>
-                    <div class="channel-live">مباشر</div>
-                </div>
-                <div class="channel-content">
-                    <h3 class="channel-name">
-                        <i class="fas fa-satellite"></i>
-                        الجزيرة الإخبارية
-                        <span class="channel-category">أخبار</span>
-                    </h3>
-                    <p class="channel-desc">أهم الأحداث والأخبار العالمية والعربية بتغطية مباشرة ومميزة</p>
-                    
-                    <div class="channel-stats">
-                        <div class="stat">
-                            <i class="fas fa-eye"></i>
-                            <span>15.7K مشاهد</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-star"></i>
-                            <span>4.7</span>
-                        </div>
-                    </div>
-                    
-                    <div class="channel-actions">
-                        <div class="action-btn">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-record-vinyl"></i>
-                        </div>
-                        <div class="action-btn play-btn">
-                            <i class="fas fa-play"></i>
-                            <span>مشاهدة</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Channel 4 -->
-            <div class="channel-card">
-                <div class="channel-header">
-                    <img src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="channel-image" alt="Cartoon Network">
-                    <div class="channel-live">مباشر</div>
-                </div>
-                <div class="channel-content">
-                    <h3 class="channel-name">
-                        <i class="fas fa-satellite"></i>
-                        كرتون نتورك
-                        <span class="channel-category">أطفال</span>
-                    </h3>
-                    <p class="channel-desc">أفضل برامج الرسوم المتحركة والأفلام الكرتونية للأطفال</p>
-                    
-                    <div class="channel-stats">
-                        <div class="stat">
-                            <i class="fas fa-eye"></i>
-                            <span>12.3K مشاهد</span>
-                        </div>
-                        <div class="stat">
-                            <i class="fas fa-star"></i>
-                            <span>4.9</span>
-                        </div>
-                    </div>
-                    
-                    <div class="channel-actions">
-                        <div class="action-btn">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="action-btn">
-                            <i class="fas fa-record-vinyl"></i>
-                        </div>
-                        <div class="action-btn play-btn">
-                            <i class="fas fa-play"></i>
-                            <span>مشاهدة</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    </div>
 
-    <!-- News Section -->
-    <section class="section">
-        <div class="section-header">
-            <div class="section-icon">
-                <i class="fas fa-newspaper"></i>
-            </div>
-            <h2 class="section-title">آخر الأخبار الرياضية</h2>
-        </div>
-        
-        <div class="channels-grid">
-            <!-- News 1 -->
-            <div class="channel-card">
-                <div class="channel-header">
-                    <img src="https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="channel-image" alt="News">
-                </div>
-                <div class="channel-content">
-                    <h3 class="channel-name">
-                        <i class="fas fa-volleyball"></i>
-                        انتقال نيمار إلى الهلال
-                    </h3>
-                    <p class="channel-desc">الهلال يعلن رسمياً عن تعاقده مع النجم البرازيلي نيمار في صفقة قياسية</p>
-                    
-                    <div class="channel-actions">
-                        <a href="#" class="action-btn" style="flex: 1; text-decoration: none; color: inherit;">
-                            <span>قراءة المزيد</span>
-                            <i class="fas fa-arrow-left"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- News 2 -->
-            <div class="channel-card">
-                <div class="channel-header">
-                    <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" class="channel-image" alt="News">
-                </div>
-                <div class="channel-content">
-                    <h3 class="channel-name">
-                        <i class="fas fa-medal"></i>
-                        تحضيرات أولمبياد باريس
-                    </h3>
-                    <p class="channel-desc">اللجنة الأولمبية تكشف عن استعداداتها النهائية لدورة الألعاب الأولمبية 2024</p>
-                    
-                    <div class="channel-actions">
-                        <a href="#" class="action-btn" style="flex: 1; text-decoration: none; color: inherit;">
-                            <span>قراءة المزيد</span>
-                            <i class="fas fa-arrow-left"></i>
-                        </a>
-                    </div>
-                </div>
+    <!-- Video Player -->
+    <div class="video-player" id="videoPlayer">
+        <video id="player" controls></video>
+        <div class="player-controls">
+            <div class="player-btn" id="closePlayer">
+                <i class="fas fa-times"></i>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -986,11 +994,11 @@
             <div class="footer-col">
                 <h3>روابط سريعة</h3>
                 <ul class="footer-links">
-                    <li><a href="#"><i class="fas fa-arrow-left"></i> الرئيسية</a></li>
-                    <li><a href="#"><i class="fas fa-arrow-left"></i> القنوات</a></li>
-                    <li><a href="#"><i class="fas fa-arrow-left"></i> التصنيفات</a></li>
-                    <li><a href="#"><i class="fas fa-arrow-left"></i> المفضلة</a></li>
-                    <li><a href="#"><i class="fas fa-arrow-left"></i> الأخبار</a></li>
+                    <li><a href="#" data-tab="home"><i class="fas fa-arrow-left"></i> الرئيسية</a></li>
+                    <li><a href="#" data-tab="channels"><i class="fas fa-arrow-left"></i> القنوات</a></li>
+                    <li><a href="#" data-tab="categories"><i class="fas fa-arrow-left"></i> التصنيفات</a></li>
+                    <li><a href="#" data-tab="favorites"><i class="fas fa-arrow-left"></i> المفضلة</a></li>
+                    <li><a href="#" data-tab="news"><i class="fas fa-arrow-left"></i> الأخبار</a></li>
                 </ul>
             </div>
             
@@ -1025,64 +1033,484 @@
     </footer>
 
     <script>
-        // Advertisement Carousel
-        let currentAd = 0;
-        const ads = document.querySelectorAll('.ad-slide');
+        // Supabase configuration
+        const SUPABASE_URL = 'https://vpvvjascwgivdjyyhzwp.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ';
         
-        function showAd(index) {
-            ads.forEach(ad => ad.classList.remove('active'));
-            ads[index].classList.add('active');
-        }
+        // State variables
+        let currentUser = null;
+        let channels = [];
+        let ads = [];
+        let categories = [];
+        let favorites = [];
         
-        function nextAd() {
-            currentAd = (currentAd + 1) % ads.length;
-            showAd(currentAd);
-        }
-        
-        // Auto rotate ads every 5 seconds
-        setInterval(nextAd, 5000);
-        
-        // Channel card hover effect
-        const channelCards = document.querySelectorAll('.channel-card');
-        
-        channelCards.forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-10px)';
-                card.style.boxShadow = '0 15px 30px rgba(67, 97, 238, 0.3)';
-                card.style.borderColor = '#4361ee';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0)';
-                card.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.4)';
-                card.style.borderColor = 'rgba(67, 97, 238, 0.2)';
-            });
-        });
-        
-        // Toggle dark mode
-        const darkModeBtn = document.querySelector('.action-btn:nth-child(2)');
-        darkModeBtn.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const icon = darkModeBtn.querySelector('i');
-            
-            if (document.body.classList.contains('dark-mode')) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            } else {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-            }
-        });
-        
-        // Active nav link
+        // DOM elements
+        const loginBtn = document.getElementById('loginBtn');
+        const loginModal = document.getElementById('loginModal');
+        const closeModal = document.getElementById('closeModal');
+        const submitLogin = document.getElementById('submitLogin');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const playerElement = document.getElementById('player');
+        const closePlayer = document.getElementById('closePlayer');
+        const themeBtn = document.getElementById('themeBtn');
+        const homeBtn = document.getElementById('homeBtn');
         const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const footerLinks = document.querySelectorAll('.footer-links a');
         
-        navLinks.forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.forEach(l => l.classList.remove('active'));
-                link.classList.add('active');
-            });
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Load data from Supabase
+            loadData();
         });
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Login button
+            loginBtn.addEventListener('click', () => {
+                loginModal.style.display = 'flex';
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', () => {
+                loginModal.style.display = 'none';
+            });
+            
+            // Submit login
+            submitLogin.addEventListener('click', handleLogin);
+            
+            // Close video player
+            closePlayer.addEventListener('click', () => {
+                videoPlayer.style.display = 'none';
+                if (playerElement) {
+                    playerElement.pause();
+                }
+            });
+            
+            // Theme toggle
+            themeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const icon = themeBtn.querySelector('i');
+                
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+            
+            // Home button
+            homeBtn.addEventListener('click', () => {
+                showTab('home');
+            });
+            
+            // Navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const tab = link.getAttribute('data-tab');
+                    showTab(tab);
+                });
+            });
+            
+            // Footer links
+            footerLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tab = link.getAttribute('data-tab');
+                    showTab(tab);
+                });
+            });
+        }
+        
+        // Show specific tab
+        function showTab(tabName) {
+            // Hide all tabs
+            tabContents.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            
+            // Add active class to selected nav link
+            document.querySelector(`.nav-link[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Load data for the tab if needed
+            if (tabName === 'categories') {
+                loadCategories();
+            } else if (tabName === 'favorites') {
+                loadFavorites();
+            }
+        }
+        
+        // Handle login
+        async function handleLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('يرجى ملء جميع الحقول');
+                return;
+            }
+            
+            // In a real app, you would authenticate with Supabase here
+            // For this example, we'll simulate a login
+            currentUser = {
+                id: 'user123',
+                username: email.split('@')[0],
+                email: email,
+                isPremium: true
+            };
+            
+            // Update UI
+            loginModal.style.display = 'none';
+            document.getElementById('welcomeTitle').textContent = `مرحباً ${currentUser.username} في TvNa`;
+            document.getElementById('welcomeSubtitle').textContent = 'استمتع الآن بأفضل القنوات المحلية والعالمية';
+            
+            // Load user-specific data
+            loadFavorites();
+        }
+        
+        // Load data from Supabase
+        async function loadData() {
+            try {
+                // Fetch channels
+                const channelsResponse = await fetch(`${SUPABASE_URL}/rest/v1/channels?is_active=eq.true`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                channels = await channelsResponse.json();
+                
+                // Fetch ads
+                const adsResponse = await fetch(`${SUPABASE_URL}/rest/v1/advertisements?is_active=eq.true`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                ads = await adsResponse.json();
+                
+                // Fetch categories
+                const categoriesResponse = await fetch(`${SUPABASE_URL}/rest/v1/categories?is_active=eq.true`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                categories = await categoriesResponse.json();
+                
+                // Update UI
+                updateStats();
+                renderAds();
+                renderFeaturedChannels();
+                renderAllChannels();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('حدث خطأ أثناء تحميل البيانات. يرجى المحاولة لاحقاً.');
+            }
+        }
+        
+        // Load categories
+        async function loadCategories() {
+            // Categories are already loaded, just render them
+            renderCategories();
+        }
+        
+        // Load favorites
+        async function loadFavorites() {
+            // In a real app, you would fetch user's favorites from Supabase
+            // For this example, we'll use the first 4 channels as favorites
+            if (channels.length > 0) {
+                favorites = channels.slice(0, 4);
+                renderFavorites();
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            document.getElementById('channelsCount').textContent = channels.length;
+            document.getElementById('favoritesCount').textContent = favorites.length;
+            document.getElementById('adsCount').textContent = ads.length;
+        }
+        
+        // Render ads
+        function renderAds() {
+            const adsCarousel = document.getElementById('adsCarousel');
+            adsCarousel.innerHTML = '';
+            
+            ads.forEach((ad, index) => {
+                const slide = document.createElement('div');
+                slide.className = `ad-slide ${index === 0 ? 'active' : ''}`;
+                slide.style.backgroundImage = `url('${ad.imageUrl}')`;
+                slide.innerHTML = `
+                    <div class="ad-content">
+                        <div class="ad-badge">مميز</div>
+                        <h3 class="ad-title">${ad.title}</h3>
+                        <p class="ad-desc">${ad.description}</p>
+                        ${ad.link ? `<a href="${ad.link}" class="ad-link" target="_blank">
+                            <span>المزيد</span>
+                            <i class="fas fa-arrow-left"></i>
+                        </a>` : ''}
+                    </div>
+                `;
+                adsCarousel.appendChild(slide);
+            });
+            
+            // Auto rotate ads
+            let currentAd = 0;
+            setInterval(() => {
+                const slides = document.querySelectorAll('.ad-slide');
+                slides.forEach((slide, i) => {
+                    slide.classList.toggle('active', i === currentAd);
+                });
+                currentAd = (currentAd + 1) % slides.length;
+            }, 5000);
+        }
+        
+        // Render featured channels
+        function renderFeaturedChannels() {
+            const featuredContainer = document.getElementById('featuredChannels');
+            featuredContainer.innerHTML = '';
+            
+            // Get 4 premium channels
+            const featuredChannels = channels.filter(c => c.isPremium).slice(0, 4);
+            
+            featuredChannels.forEach(channel => {
+                featuredContainer.appendChild(createChannelCard(channel));
+            });
+        }
+        
+        // Render all channels
+        function renderAllChannels() {
+            const allChannelsContainer = document.getElementById('allChannels');
+            allChannelsContainer.innerHTML = '';
+            
+            channels.forEach(channel => {
+                allChannelsContainer.appendChild(createChannelCard(channel));
+            });
+        }
+        
+        // Render categories
+        function renderCategories() {
+            const categoriesContainer = document.getElementById('categoriesContent');
+            categoriesContainer.innerHTML = '';
+            
+            categories.forEach(category => {
+                const categoryChannels = channels.filter(c => c.category === category.name);
+                
+                const categoryCard = document.createElement('div');
+                categoryCard.className = 'channel-card';
+                categoryCard.innerHTML = `
+                    <div class="channel-header">
+                        <div style="background: linear-gradient(45deg, #4361ee, #3a0ca3); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-folder" style="font-size: 3rem;"></i>
+                        </div>
+                    </div>
+                    <div class="channel-content">
+                        <h3 class="channel-name">
+                            <i class="fas fa-tag"></i>
+                            ${category.nameAr || category.name}
+                        </h3>
+                        <p class="channel-desc">${categoryChannels.length} قنوات</p>
+                        <div class="channel-actions">
+                            <div class="action-btn" style="flex: 1" data-category="${category.name}">
+                                <span>عرض القنوات</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                categoriesContainer.appendChild(categoryCard);
+            });
+            
+            // Add event listeners to category buttons
+            document.querySelectorAll('[data-category]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const category = btn.getAttribute('data-category');
+                    showCategoryChannels(category);
+                });
+            });
+        }
+        
+        // Show channels for a specific category
+        function showCategoryChannels(category) {
+            // Show channels tab
+            showTab('channels');
+            
+            // Filter channels
+            const categoryChannels = channels.filter(c => c.category === category);
+            
+            // Render filtered channels
+            const allChannelsContainer = document.getElementById('allChannels');
+            allChannelsContainer.innerHTML = '';
+            
+            categoryChannels.forEach(channel => {
+                allChannelsContainer.appendChild(createChannelCard(channel));
+            });
+            
+            // Scroll to channels
+            allChannelsContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Render favorites
+        function renderFavorites() {
+            const favoritesContainer = document.getElementById('favoritesContent');
+            favoritesContainer.innerHTML = '';
+            
+            if (favorites.length === 0) {
+                favoritesContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
+                        <i class="fas fa-heart" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                        <h3>لا توجد قنوات مفضلة</h3>
+                        <p>أضف بعض القنوات إلى مفضلتك لتظهر هنا</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            favorites.forEach(channel => {
+                favoritesContainer.appendChild(createChannelCard(channel));
+            });
+        }
+        
+        // Create channel card
+        function createChannelCard(channel) {
+            const card = document.createElement('div');
+            card.className = 'channel-card';
+            card.innerHTML = `
+                <div class="channel-header">
+                    <img src="${channel.imageUrl}" class="channel-image" alt="${channel.name}">
+                    ${channel.isPremium ? '<div class="channel-badge">مميز</div>' : ''}
+                    <div class="channel-live">مباشر</div>
+                </div>
+                <div class="channel-content">
+                    <h3 class="channel-name">
+                        <i class="fas fa-satellite"></i>
+                        ${channel.nameAr || channel.name}
+                        <span class="channel-category">${channel.category}</span>
+                    </h3>
+                    <p class="channel-desc">${channel.descriptionAr || channel.description}</p>
+                    <div class="channel-stats">
+                        <div class="stat">
+                            <i class="fas fa-eye"></i>
+                            <span>${channel.viewersCount} مشاهد</span>
+                        </div>
+                        <div class="stat">
+                            <i class="fas fa-star"></i>
+                            <span>${channel.rating}</span>
+                        </div>
+                    </div>
+                    <div class="channel-actions">
+                        <div class="action-btn" data-id="${channel.id}" data-action="favorite">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="action-btn" data-id="${channel.id}" data-action="record">
+                            <i class="fas fa-record-vinyl"></i>
+                        </div>
+                        <div class="action-btn play-btn" data-id="${channel.id}" data-action="play">
+                            <i class="fas fa-play"></i>
+                            <span>مشاهدة</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners to buttons
+            card.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const channelId = btn.getAttribute('data-id');
+                    const action = btn.getAttribute('data-action');
+                    handleChannelAction(channelId, action);
+                });
+            });
+            
+            return card;
+        }
+        
+        // Handle channel actions
+        function handleChannelAction(channelId, action) {
+            const channel = channels.find(c => c.id === channelId);
+            
+            if (!channel) return;
+            
+            switch (action) {
+                case 'favorite':
+                    toggleFavorite(channel);
+                    break;
+                case 'record':
+                    alert(`تم جدولة تسجيل قناة ${channel.nameAr || channel.name}`);
+                    break;
+                case 'play':
+                    playChannel(channel);
+                    break;
+            }
+        }
+        
+        // Toggle favorite
+        function toggleFavorite(channel) {
+            if (!currentUser) {
+                loginModal.style.display = 'flex';
+                return;
+            }
+            
+            const index = favorites.findIndex(f => f.id === channel.id);
+            
+            if (index === -1) {
+                // Add to favorites
+                favorites.push(channel);
+                alert(`تم إضافة ${channel.nameAr || channel.name} إلى المفضلة`);
+            } else {
+                // Remove from favorites
+                favorites.splice(index, 1);
+                alert(`تم إزالة ${channel.nameAr || channel.name} من المفضلة`);
+            }
+            
+            // Update UI
+            document.getElementById('favoritesCount').textContent = favorites.length;
+            
+            if (document.getElementById('favoritesTab').classList.contains('active')) {
+                renderFavorites();
+            }
+        }
+        
+        // Play channel
+        function playChannel(channel) {
+            if (!currentUser) {
+                loginModal.style.display = 'flex';
+                return;
+            }
+            
+            // Show player
+            videoPlayer.style.display = 'block';
+            
+            // Initialize HLS.js if needed
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(channel.url);
+                hls.attachMedia(playerElement);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    playerElement.play();
+                });
+            } else if (playerElement.canPlayType('application/vnd.apple.mpegurl')) {
+                playerElement.src = channel.url;
+                playerElement.addEventListener('loadedmetadata', function() {
+                    playerElement.play();
+                });
+            }
+        }
     </script>
 </body>
 </html>
