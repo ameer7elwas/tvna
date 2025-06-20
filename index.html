@@ -350,8 +350,7 @@
         const SUPABASE_URL = 'https://vpvvjascwgivdjyyhzwp.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ';
         
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         // عناصر DOM
         const authScreen = document.getElementById('auth-screen');
         const mainApp = document.getElementById('main-app');
