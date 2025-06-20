@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * {
             margin: 0;
@@ -915,10 +914,7 @@
                 </div>
                 
                 <div class="channels-grid" id="featuredChannels">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <span>جاري تحميل القنوات...</span>
-                    </div>
+                    <!-- Channels will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -934,10 +930,7 @@
                 </div>
                 
                 <div class="channels-grid" id="allChannels">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <span>جاري تحميل القنوات...</span>
-                    </div>
+                    <!-- Channels will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -953,10 +946,7 @@
                 </div>
                 
                 <div class="channels-grid" id="categoriesContent">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <span>جاري تحميل التصنيفات...</span>
-                    </div>
+                    <!-- Categories will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -972,10 +962,7 @@
                 </div>
                 
                 <div class="channels-grid" id="favoritesContent">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <span>جاري تحميل المفضلة...</span>
-                    </div>
+                    <!-- Favorites will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -991,10 +978,7 @@
                 </div>
                 
                 <div class="channels-grid" id="newsContent">
-                    <div class="loading">
-                        <div class="spinner"></div>
-                        <span>جاري تحميل الأخبار...</span>
-                    </div>
+                    <!-- News will be loaded by JavaScript -->
                 </div>
             </div>
         </section>
@@ -1086,14 +1070,10 @@
     </footer>
 
     <script>
-        // Initialize Supabase
-        const SUPABASE_URL = 'https://vpvvjascwgivdjyyhzwp.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         // State variables
         let currentUser = null;
         let channels = [];
+        let ads = [];
         let categories = [];
         let favorites = [];
         
@@ -1112,12 +1092,12 @@
         const footerLinks = document.querySelectorAll('.footer-links a');
         
         // Initialize the app
-        document.addEventListener('DOMContentLoaded', async () => {
+        document.addEventListener('DOMContentLoaded', () => {
             // Set up event listeners
             setupEventListeners();
             
-            // Load data from Supabase
-            await loadData();
+            // Load mock data
+            loadMockData();
             
             // Render initial UI
             renderFeaturedChannels();
@@ -1221,105 +1201,118 @@
             }
             
             // Simulate login
-            try {
-                // In a real app, you would use supabase.auth.signInWithPassword()
-                // For demo, we'll simulate a login
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', email)
-                    .single();
-                
-                if (error) throw error;
-                
-                if (!data) {
-                    alert('المستخدم غير موجود');
-                    return;
-                }
-                
-                // Set current user
-                currentUser = {
-                    id: data.id,
-                    username: data.username,
-                    email: data.email,
-                    isPremium: data.is_premium
-                };
-                
-                // Update UI
-                loginModal.style.display = 'none';
-                document.getElementById('welcomeTitle').textContent = `مرحباً ${currentUser.username} في TvNa`;
-                document.getElementById('welcomeSubtitle').textContent = 'استمتع الآن بأفضل القنوات المحلية والعالمية';
-                
-                // Load user-specific data
-                await loadFavorites();
-                renderFavorites();
-                
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('حدث خطأ أثناء تسجيل الدخول');
-            }
-        }
-        
-        // Load data from Supabase
-        async function loadData() {
-            try {
-                // Load channels
-                const { data: channelsData, error: channelsError } = await supabase
-                    .from('channels')
-                    .select('*');
-                
-                if (channelsError) throw channelsError;
-                channels = channelsData;
-                
-                // Load categories
-                const { data: categoriesData, error: categoriesError } = await supabase
-                    .from('categories')
-                    .select('*');
-                
-                if (categoriesError) throw categoriesError;
-                categories = categoriesData;
-                
-                // Update stats
-                document.getElementById('channelsCount').textContent = channels.length;
-                
-                // Load favorites if user is logged in
-                if (currentUser) {
-                    await loadFavorites();
-                }
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                alert('حدث خطأ أثناء تحميل البيانات');
-            }
-        }
-        
-        // Load favorites for current user
-        async function loadFavorites() {
-            if (!currentUser) return;
+            currentUser = {
+                id: 'user123',
+                username: email.split('@')[0],
+                email: email,
+                isPremium: true
+            };
             
-            try {
-                const { data, error } = await supabase
-                    .from('favorites')
-                    .select('channel_id')
-                    .eq('user_id', currentUser.id);
-                
-                if (error) throw error;
-                
-                // Get favorite channel objects
-                favorites = [];
-                for (const fav of data) {
-                    const channel = channels.find(c => c.id === fav.channel_id);
-                    if (channel) {
-                        favorites.push(channel);
-                    }
+            // Update UI
+            loginModal.style.display = 'none';
+            document.getElementById('welcomeTitle').textContent = `مرحباً ${currentUser.username} في TvNa`;
+            document.getElementById('welcomeSubtitle').textContent = 'استمتع الآن بأفضل القنوات المحلية والعالمية';
+            
+            // Load user-specific data
+            renderFavorites();
+        }
+        
+        // Load mock data
+        function loadMockData() {
+            // Mock channels
+            channels = [
+                {
+                    id: '1',
+                    name: 'Al Jazeera',
+                    name_ar: 'الجزيرة',
+                    description: 'News channel',
+                    description_ar: 'قناة إخبارية رائدة',
+                    image_url: 'https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?q=80&w=1887&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'أخبار',
+                    is_premium: false,
+                    viewers_count: 15000,
+                    rating: 4.5
+                },
+                {
+                    id: '2',
+                    name: 'BeIN Sports',
+                    name_ar: 'بي إن سبورت',
+                    description: 'Sports channel',
+                    description_ar: 'قناة رياضية متخصصة',
+                    image_url: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?q=80&w=2070&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'رياضة',
+                    is_premium: true,
+                    viewers_count: 25000,
+                    rating: 4.8
+                },
+                {
+                    id: '3',
+                    name: 'MBC 1',
+                    name_ar: 'إم بي سي 1',
+                    description: 'General entertainment',
+                    description_ar: 'قناة ترفيهية عامة',
+                    image_url: 'https://images.unsplash.com/photo-1563986768711-b3bde3dc821e?q=80&w=2068&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'ترفيه',
+                    is_premium: false,
+                    viewers_count: 18000,
+                    rating: 4.3
+                },
+                {
+                    id: '4',
+                    name: 'Rotana Cinema',
+                    name_ar: 'روتانا سينما',
+                    description: 'Movie channel',
+                    description_ar: 'قناة أفلام سينمائية',
+                    image_url: 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'أفلام',
+                    is_premium: true,
+                    viewers_count: 12000,
+                    rating: 4.6
+                },
+                {
+                    id: '5',
+                    name: 'Cartoon Network',
+                    name_ar: 'كرتون نتورك',
+                    description: 'Kids channel',
+                    description_ar: 'قناة أطفال',
+                    image_url: 'https://images.unsplash.com/photo-1592155931584-901ac15763e3?q=80&w=1935&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'أطفال',
+                    is_premium: false,
+                    viewers_count: 10000,
+                    rating: 4.7
+                },
+                {
+                    id: '6',
+                    name: 'National Geographic',
+                    name_ar: 'ناشيونال جيوغرافيك',
+                    description: 'Documentary channel',
+                    description_ar: 'قناة وثائقية',
+                    image_url: 'https://images.unsplash.com/photo-1610296669228-602fa827fc1f?q=80&w=1975&auto=format&fit=crop',
+                    stream_url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+                    category: 'وثائقي',
+                    is_premium: true,
+                    viewers_count: 9000,
+                    rating: 4.9
                 }
-                
-                // Update favorites count
-                document.getElementById('favoritesCount').textContent = favorites.length;
-                
-            } catch (error) {
-                console.error('Error loading favorites:', error);
-            }
+            ];
+            
+            // Mock categories
+            categories = [
+                { id: '1', name: 'Sports', name_ar: 'رياضة' },
+                { id: '2', name: 'News', name_ar: 'أخبار' },
+                { id: '3', name: 'Entertainment', name_ar: 'ترفيه' },
+                { id: '4', name: 'Movies', name_ar: 'أفلام' },
+                { id: '5', name: 'Kids', name_ar: 'أطفال' },
+                { id: '6', name: 'Documentary', name_ar: 'وثائقي' }
+            ];
+            
+            // Mock favorites
+            favorites = [channels[1], channels[3], channels[5]];
         }
         
         // Start ad carousel
@@ -1343,18 +1336,7 @@
             featuredContainer.innerHTML = '';
             
             // Get premium channels
-            const featuredChannels = channels.filter(c => c.is_premium).slice(0, 6);
-            
-            if (featuredChannels.length === 0) {
-                featuredContainer.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
-                        <i class="fas fa-tv" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
-                        <h3>لا توجد قنوات مميزة حالياً</h3>
-                        <p>سيتم إضافة قنوات جديدة قريباً</p>
-                    </div>
-                `;
-                return;
-            }
+            const featuredChannels = channels.filter(c => c.is_premium);
             
             featuredChannels.forEach(channel => {
                 featuredContainer.appendChild(createChannelCard(channel));
@@ -1366,17 +1348,6 @@
             const allChannelsContainer = document.getElementById('allChannels');
             allChannelsContainer.innerHTML = '';
             
-            if (channels.length === 0) {
-                allChannelsContainer.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
-                        <i class="fas fa-tv" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
-                        <h3>لا توجد قنوات متاحة حالياً</h3>
-                        <p>سيتم إضافة قنوات جديدة قريباً</p>
-                    </div>
-                `;
-                return;
-            }
-            
             channels.forEach(channel => {
                 allChannelsContainer.appendChild(createChannelCard(channel));
             });
@@ -1387,19 +1358,8 @@
             const categoriesContainer = document.getElementById('categoriesContent');
             categoriesContainer.innerHTML = '';
             
-            if (categories.length === 0) {
-                categoriesContainer.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; grid-column: 1 / -1;">
-                        <i class="fas fa-list" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
-                        <h3>لا توجد تصنيفات متاحة</h3>
-                        <p>سيتم إضافة تصنيفات جديدة قريباً</p>
-                    </div>
-                `;
-                return;
-            }
-            
             categories.forEach(category => {
-                const categoryChannels = channels.filter(c => c.category_id === category.id);
+                const categoryChannels = channels.filter(c => c.category === category.name_ar);
                 
                 const categoryCard = document.createElement('div');
                 categoryCard.className = 'channel-card';
@@ -1412,11 +1372,11 @@
                     <div class="channel-content">
                         <h3 class="channel-name">
                             <i class="fas fa-tag"></i>
-                            ${category.name_ar || category.name}
+                            ${category.name_ar}
                         </h3>
                         <p class="channel-desc">${categoryChannels.length} قنوات</p>
                         <div class="channel-actions">
-                            <div class="action-btn" style="flex: 1" data-category="${category.id}">
+                            <div class="action-btn" style="flex: 1" data-category="${category.name_ar}">
                                 <span>عرض القنوات</span>
                             </div>
                         </div>
@@ -1429,19 +1389,19 @@
             // Add event listeners to category buttons
             document.querySelectorAll('[data-category]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const categoryId = btn.getAttribute('data-category');
-                    showCategoryChannels(categoryId);
+                    const category = btn.getAttribute('data-category');
+                    showCategoryChannels(category);
                 });
             });
         }
         
         // Show channels for a specific category
-        function showCategoryChannels(categoryId) {
+        function showCategoryChannels(category) {
             // Show channels tab
             showTab('channels');
             
             // Filter channels
-            const categoryChannels = channels.filter(c => c.category_id === categoryId);
+            const categoryChannels = channels.filter(c => c.category === category);
             
             // Render filtered channels
             const allChannelsContainer = document.getElementById('allChannels');
@@ -1507,10 +1467,6 @@
         
         // Create channel card
         function createChannelCard(channel) {
-            // Find category for this channel
-            const category = categories.find(c => c.id === channel.category_id);
-            const categoryName = category ? (category.name_ar || category.name) : 'غير مصنف';
-            
             const card = document.createElement('div');
             card.className = 'channel-card';
             card.innerHTML = `
@@ -1523,7 +1479,7 @@
                     <h3 class="channel-name">
                         <i class="fas fa-satellite"></i>
                         ${channel.name_ar || channel.name}
-                        <span class="channel-category">${categoryName}</span>
+                        <span class="channel-category">${channel.category}</span>
                     </h3>
                     <p class="channel-desc">${channel.description_ar || channel.description}</p>
                     <div class="channel-stats">
@@ -1565,14 +1521,14 @@
         }
         
         // Handle channel actions
-        async function handleChannelAction(channelId, action) {
+        function handleChannelAction(channelId, action) {
             const channel = channels.find(c => c.id === channelId);
             
             if (!channel) return;
             
             switch (action) {
                 case 'favorite':
-                    await toggleFavorite(channel);
+                    toggleFavorite(channel);
                     break;
                 case 'record':
                     alert(`تم جدولة تسجيل قناة ${channel.name_ar || channel.name}`);
@@ -1584,54 +1540,29 @@
         }
         
         // Toggle favorite
-        async function toggleFavorite(channel) {
+        function toggleFavorite(channel) {
             if (!currentUser) {
                 loginModal.style.display = 'flex';
                 return;
             }
             
-            try {
-                // Check if channel is already favorited
-                const isFavorited = favorites.some(f => f.id === channel.id);
-                
-                if (isFavorited) {
-                    // Remove from favorites
-                    const { error } = await supabase
-                        .from('favorites')
-                        .delete()
-                        .eq('user_id', currentUser.id)
-                        .eq('channel_id', channel.id);
-                    
-                    if (error) throw error;
-                    
-                    // Update local state
-                    favorites = favorites.filter(f => f.id !== channel.id);
-                    alert(`تم إزالة ${channel.name_ar || channel.name} من المفضلة`);
-                } else {
-                    // Add to favorites
-                    const { error } = await supabase
-                        .from('favorites')
-                        .insert([
-                            { user_id: currentUser.id, channel_id: channel.id }
-                        ]);
-                    
-                    if (error) throw error;
-                    
-                    // Update local state
-                    favorites.push(channel);
-                    alert(`تم إضافة ${channel.name_ar || channel.name} إلى المفضلة`);
-                }
-                
-                // Update UI
-                document.getElementById('favoritesCount').textContent = favorites.length;
-                
-                if (document.getElementById('favoritesTab').classList.contains('active')) {
-                    renderFavorites();
-                }
-                
-            } catch (error) {
-                console.error('Error updating favorites:', error);
-                alert('حدث خطأ أثناء تحديث المفضلة');
+            const index = favorites.findIndex(f => f.id === channel.id);
+            
+            if (index === -1) {
+                // Add to favorites
+                favorites.push(channel);
+                alert(`تم إضافة ${channel.name_ar || channel.name} إلى المفضلة`);
+            } else {
+                // Remove from favorites
+                favorites.splice(index, 1);
+                alert(`تم إزالة ${channel.name_ar || channel.name} من المفضلة`);
+            }
+            
+            // Update UI
+            document.getElementById('favoritesCount').textContent = favorites.length;
+            
+            if (document.getElementById('favoritesTab').classList.contains('active')) {
+                renderFavorites();
             }
         }
         
