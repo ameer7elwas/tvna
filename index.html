@@ -2238,7 +2238,12 @@
             <button class="modal-btn" id="submitLogin">دخول</button>
             
             <div class="modal-footer">
-                <p>ليس لديك حساب؟ <a href="#" id="signupLink">إنشاء حساب جديد</a></p>
+                <p>تجربة نظام المستخدمين:</p>
+                <p style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; font-size: 14px;">
+                    <strong>مستخدم عادي:</strong> user1 / user123<br>
+                    <strong>عضو مميز:</strong> premium / premium123<br>
+                    <strong>عضو VIP:</strong> vip / vip123
+                </p>
             </div>
         </div>
     </div>
@@ -2437,7 +2442,7 @@
                 } catch (error) {
                     console.error('Connection test failed:', error);
                     this.isConnected = false;
-                    this.showConnectionStatus('error', '❌ فشل الاتصال بقاعدة البيانات');
+                    this.showConnectionStatus('error', '❌ فشل الاتصال بقاعدة البيانات - استخدام البيانات المحلية');
                     
                     setTimeout(() => {
                         this.hideConnectionStatus();
@@ -2587,22 +2592,48 @@
                 return iconMap[categoryName] || 'fas fa-tv';
             }
 
-            // User authentication
+            // Enhanced User authentication with better compatibility
             async authenticateUser(emailOrUsername, password) {
                 try {
-                    // First, try to find user by email or username
-                    const userQuery = emailOrUsername.includes('@') 
-                        ? `users?select=*&eq.email.${emailOrUsername}`
-                        : `users?select=*&eq.username.${emailOrUsername}`;
+                    console.log('Attempting authentication for:', emailOrUsername);
                     
-                    const users = await this.supabaseRequest(userQuery);
+                    // First, try to find user by email or username using corrected query syntax
+                    let users = null;
+                    
+                    if (emailOrUsername.includes('@')) {
+                        // Search by email
+                        users = await this.supabaseRequest(`users?email=eq.${emailOrUsername}&select=*`);
+                    } else {
+                        // Search by username
+                        users = await this.supabaseRequest(`users?username=eq.${emailOrUsername}&select=*`);
+                    }
+                    
+                    console.log('User query results:', users);
                     
                     if (users && users.length > 0) {
                         const user = users[0];
-                        // Simple password verification (in real app, use proper hashing)
-                        const storedPassword = atob(user.password_hash);
+                        console.log('User found:', user);
+                        
+                        // Check if user has password_hash
+                        if (!user.password_hash) {
+                            console.error('User has no password hash');
+                            return null;
+                        }
+                        
+                        // Decode the stored password (base64 decoding)
+                        let storedPassword;
+                        try {
+                            storedPassword = atob(user.password_hash);
+                        } catch (error) {
+                            console.error('Error decoding password:', error);
+                            return null;
+                        }
+                        
+                        console.log('Password check - provided:', password, 'stored:', storedPassword);
                         
                         if (password === storedPassword) {
+                            console.log('Password matches! Logging in user.');
+                            
                             // Update last login
                             try {
                                 await this.supabaseRequest(`users?id=eq.${user.id}`, {
@@ -2615,24 +2646,90 @@
                                 console.error('Error updating last login:', error);
                             }
                             
-                            return {
+                            const authenticatedUser = {
                                 id: user.id,
                                 username: user.username,
                                 email: user.email,
+                                phone: user.phone,
                                 isPremium: user.membership_type === 'premium' || user.membership_type === 'vip',
-                                membershipType: user.membership_type,
+                                membershipType: user.membership_type || 'free',
                                 allowedChannels: user.allowed_channels || [],
                                 joinDate: new Date(user.created_at),
-                                avatar: user.profile_image
+                                avatar: user.profile_image,
+                                isActive: user.is_active !== false
                             };
+                            
+                            console.log('Authenticated user object:', authenticatedUser);
+                            return authenticatedUser;
+                        } else {
+                            console.log('Password does not match');
                         }
+                    } else {
+                        console.log('No user found with provided credentials');
                     }
                     
                     return null;
                 } catch (error) {
                     console.error('Authentication error:', error);
-                    return null;
+                    console.log('Falling back to sample user authentication');
+                    // Try to authenticate with sample users for demo
+                    return this.authenticateWithSampleUsers(emailOrUsername, password);
                 }
+            }
+
+            // Fallback authentication with sample users
+            authenticateWithSampleUsers(emailOrUsername, password) {
+                console.log('Authenticating with sample users - input:', emailOrUsername, password);
+                
+                const sampleUsers = [
+                    {
+                        id: 'sample1',
+                        username: 'user1',
+                        email: 'user1@example.com',
+                        password: 'user123',
+                        membershipType: 'free',
+                        allowedChannels: []
+                    },
+                    {
+                        id: 'sample2',
+                        username: 'premium',
+                        email: 'premium@example.com',
+                        password: 'premium123',
+                        membershipType: 'premium',
+                        allowedChannels: []
+                    },
+                    {
+                        id: 'sample3',
+                        username: 'vip',
+                        email: 'vip@example.com',
+                        password: 'vip123',
+                        membershipType: 'vip',
+                        allowedChannels: []
+                    }
+                ];
+
+                const user = sampleUsers.find(u => 
+                    (u.username === emailOrUsername || u.email === emailOrUsername) && 
+                    u.password === password
+                );
+
+                if (user) {
+                    console.log('Sample user found:', user);
+                    return {
+                        id: user.id,
+                        username: user.username,
+                        email: user.email,
+                        isPremium: user.membershipType === 'premium' || user.membershipType === 'vip',
+                        membershipType: user.membershipType,
+                        allowedChannels: user.allowedChannels,
+                        joinDate: new Date(),
+                        avatar: null,
+                        isActive: true
+                    };
+                }
+
+                console.log('No sample user found');
+                return null;
             }
 
             // Favorites management with database
@@ -2650,13 +2747,17 @@
                         this.favorites.push(channel);
                         
                         // Save to database
-                        await this.supabaseRequest('favorites', {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                user_id: this.currentUser.id,
-                                channel_id: channel.id
-                            })
-                        });
+                        try {
+                            await this.supabaseRequest('favorites', {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    user_id: this.currentUser.id,
+                                    channel_id: channel.id
+                                })
+                            });
+                        } catch (error) {
+                            console.error('Error saving favorite to database:', error);
+                        }
                         
                         this.showToast(`تم إضافة ${channel.nameAr} إلى المفضلة`, 'success');
                     } else {
@@ -2664,9 +2765,13 @@
                         this.favorites.splice(index, 1);
                         
                         // Remove from database
-                        await this.supabaseRequest(`favorites?user_id=eq.${this.currentUser.id}&channel_id=eq.${channel.id}`, {
-                            method: 'DELETE'
-                        });
+                        try {
+                            await this.supabaseRequest(`favorites?user_id=eq.${this.currentUser.id}&channel_id=eq.${channel.id}`, {
+                                method: 'DELETE'
+                            });
+                        } catch (error) {
+                            console.error('Error removing favorite from database:', error);
+                        }
                         
                         this.showToast(`تم إزالة ${channel.nameAr} من المفضلة`, 'warning');
                     }
@@ -3539,15 +3644,28 @@
             }
             
             playChannel(channel) {
-                // Check user permissions
-                if (channel.isPremium && (!this.currentUser || !this.currentUser.isPremium)) {
-                    this.showPremiumModal();
-                    return;
-                }
+                console.log('Attempting to play channel:', channel);
+                console.log('Current user:', this.currentUser);
                 
+                // Check if user is logged in
                 if (!this.currentUser) {
                     this.showLoginModal();
+                    this.showToast('يجب تسجيل الدخول أولاً', 'warning');
                     return;
+                }
+
+                // Check if user account is active
+                if (!this.currentUser.isActive) {
+                    this.showToast('حسابك غير نشط، تواصل مع الإدارة', 'error');
+                    return;
+                }
+
+                // Check user permissions for premium content
+                if (channel.isPremium || channel.membershipType === 'premium') {
+                    if (!this.currentUser.isPremium) {
+                        this.showPremiumModal();
+                        return;
+                    }
                 }
                 
                 // Check if user has access to this specific channel (for VIP users)
