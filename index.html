@@ -1923,6 +1923,179 @@
         .rounded-3xl {
             border-radius: 30px;
         }
+
+        /* Channel Card - Smaller & Modern */
+        .channel-card {
+            background: var(--glass);
+            border-radius: 18px;
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            margin-bottom: 1.2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            min-width: 180px;
+            max-width: 240px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            border: 1px solid var(--glass-border);
+        }
+        .channel-card:hover {
+            transform: scale(1.04) translateY(-4px);
+            box-shadow: var(--shadow-medium);
+        }
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.2rem;
+        }
+        .channel-header {
+            width: 100%;
+            height: 90px;
+            position: relative;
+            overflow: hidden;
+            background: var(--gradient-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .channel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0 0 12px 12px;
+        }
+        .channel-content {
+            padding: 0.7rem 1rem 1rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .channel-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .channel-category {
+            font-size: 0.8rem;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 8px;
+            padding: 0.1rem 0.5rem;
+            margin-right: 0.5rem;
+        }
+        .channel-desc {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 0.5rem;
+        }
+        .channel-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .stat {
+            font-size: 0.8rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+        .channel-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .channel-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 0.5rem 0.2rem;
+            border-radius: 8px;
+            background: var(--glass);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid var(--glass-border);
+        }
+        .channel-action-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .channel-action-btn.favorite.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        .channel-action-btn.play-btn {
+            background: var(--premium);
+            color: #fff;
+            flex: 2;
+        }
+        .channel-action-btn.play-btn:hover {
+            background: linear-gradient(135deg, var(--warning), #ff6b35);
+        }
+        body.light-mode {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+            color: #222 !important;
+        }
+        body.light-mode header,
+        body.light-mode .section,
+        body.light-mode .welcome-card,
+        body.light-mode .modal-content,
+        body.light-mode .channel-card,
+        body.light-mode .stat-card {
+            background: rgba(255,255,255,0.95) !important;
+            color: #222 !important;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+        }
+        body.light-mode .nav-link,
+        body.light-mode .quick-action-btn,
+        body.light-mode .action-btn,
+        body.light-mode .user-avatar,
+        body.light-mode .view-toggle,
+        body.light-mode .filter-group,
+        body.light-mode .sort-toggle,
+        body.light-mode .newsletter-input,
+        body.light-mode .newsletter-btn {
+            background: #f8f9fa !important;
+            color: #222 !important;
+            border: 1px solid #e9ecef !important;
+        }
+        body.light-mode .channel-action-btn.play-btn,
+        body.light-mode .channel-action-btn.favorite.active {
+            background: var(--primary) !important;
+            color: #fff !important;
+        }
+        body.light-mode .channel-action-btn:hover {
+            background: var(--secondary) !important;
+            color: #fff !important;
+        }
+        body.light-mode .channel-badge {
+            background: var(--primary) !important;
+            color: #fff !important;
+        }
+        body.light-mode .channel-badge.live {
+            background: var(--accent) !important;
+        }
+        body.light-mode .modal-content {
+            border: 1px solid #e9ecef !important;
+        }
+        body.light-mode .toast {
+            background: #fff !important;
+            color: #222 !important;
+            border: 1px solid #e9ecef !important;
+        }
+        body.light-mode .empty-state-icon i {
+            color: var(--primary) !important;
+        }
     </style>
 </head>
 <body>
@@ -2734,54 +2907,21 @@
                     this.showLoginModal();
                     return;
                 }
-                
                 const index = this.favorites.findIndex(f => f.id === channel.id);
-                
-                try {
-                    if (index === -1) {
-                        // Add to favorites
-                        this.favorites.push(channel);
-                        
-                        // Save to database
-                        try {
-                            await this.supabaseRequest('favorites', {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    user_id: this.currentUser.id,
-                                    channel_id: channel.id
-                                })
-                            });
-                        } catch (error) {
-                            console.error('Error saving favorite to database:', error);
-                        }
-                        
-                        this.showToast(`تم إضافة ${channel.nameAr} إلى المفضلة`, 'success');
-                    } else {
-                        // Remove from favorites
-                        this.favorites.splice(index, 1);
-                        
-                        // Remove from database
-                        try {
-                            await this.supabaseRequest(`favorites?user_id=eq.${this.currentUser.id}&channel_id=eq.${channel.id}`, {
-                                method: 'DELETE'
-                            });
-                        } catch (error) {
-                            console.error('Error removing favorite from database:', error);
-                        }
-                        
-                        this.showToast(`تم إزالة ${channel.nameAr} من المفضلة`, 'warning');
-                    }
-                    
+                if (index === -1) {
+                    this.favorites.push(channel);
                     this.saveFavoritesToStorage();
-                    this.updateStats();
                     this.updateFavoriteButtons();
-                    
-                    if (this.currentTab === 'favorites') {
-                        this.renderFavorites();
-                    }
-                } catch (error) {
-                    console.error('Error updating favorites:', error);
-                    this.showToast('خطأ في تحديث المفضلة', 'error');
+                    this.showToast('تمت الإضافة إلى المفضلة', 'success');
+                } else {
+                    this.favorites.splice(index, 1);
+                    this.saveFavoritesToStorage();
+                    this.updateFavoriteButtons();
+                    this.showToast('تمت الإزالة من المفضلة', 'info');
+                }
+                this.updateStats();
+                if (this.currentTab === 'favorites') {
+                    this.renderFavorites();
                 }
             }
 
@@ -3068,6 +3208,11 @@
                     this.currentUser = JSON.parse(savedUser);
                     this.updateUserUI();
                     this.loadUserFavorites();
+                } else {
+                    // إذا لم يوجد مستخدم، أظهر نافذة تسجيل الدخول تلقائياً
+                    setTimeout(() => {
+                        this.showLoginModal();
+                    }, 500);
                 }
             }
             
@@ -3532,9 +3677,7 @@
             createChannelCard(channel) {
                 const card = document.createElement('div');
                 card.className = 'channel-card fade-in';
-                
                 const isFavorite = this.favorites.some(f => f.id === channel.id);
-                
                 card.innerHTML = `
                     <div class="channel-header">
                         <img src="${channel.imageUrl}" class="channel-image" alt="${channel.nameAr}" loading="lazy">
@@ -3582,22 +3725,20 @@
                         </div>
                     </div>
                 `;
-                
-                // Add event listeners
-                card.querySelectorAll('.channel-action-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
+                // إصلاح this في الأحداث
+                const self = this;
+                card.querySelectorAll('.channel-action-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
                         e.stopPropagation();
                         const channelId = btn.getAttribute('data-id');
                         const action = btn.getAttribute('data-action');
-                        this.handleChannelAction(channelId, action);
+                        self.handleChannelAction(channelId, action);
                     });
                 });
-                
                 // Add card click to play
-                card.addEventListener('click', () => {
-                    this.handleChannelAction(channel.id, 'play');
+                card.addEventListener('click', function() {
+                    self.handleChannelAction(channel.id, 'play');
                 });
-                
                 return card;
             }
 
@@ -3743,9 +3884,7 @@
             renderCategories() {
                 const container = document.getElementById('categoriesContent');
                 if (!container) return;
-                
                 container.innerHTML = '';
-                
                 this.categories.forEach(category => {
                     const categoryChannels = this.channels.filter(c => c.category === category.name);
                     
@@ -3823,12 +3962,55 @@
                 this.renderChannelsInContainer(container, this.favorites);
             }
             
-            renderNews() {
+            async fetchSportsNews() {
+                // استخدم NewsAPI أو مصدر مجاني للأخبار الرياضية
+                // هنا مثال باستخدام NewsAPI (يجب وضع مفتاح حقيقي)
+                const apiKey = 'demo'; // ضع مفتاحك هنا
+                const url = `https://newsapi.org/v2/top-headlines?category=sports&language=ar&apiKey=${apiKey}`;
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data.articles && data.articles.length > 0) {
+                        return data.articles.slice(0, 12); // أول 12 خبر فقط
+                    }
+                } catch (e) {
+                    // fallback
+                }
+                // fallback: أخبار رياضية وهمية
+                return [
+                    {title: 'خبر رياضي 1', description: 'تفاصيل الخبر الرياضي الأول', url: '#', urlToImage: 'https://placehold.co/400x200?text=News+1'},
+                    {title: 'خبر رياضي 2', description: 'تفاصيل الخبر الرياضي الثاني', url: '#', urlToImage: 'https://placehold.co/400x200?text=News+2'}
+                ];
+            }
+            async renderNews() {
                 const container = document.getElementById('newsContent');
                 if (!container) return;
-                
-                const newsChannels = this.channels.filter(c => c.category === 'News' || c.category === 'Sports');
-                this.renderChannelsInContainer(container, newsChannels);
+                container.innerHTML = '<div class="loading-skeleton" style="height:200px"></div>';
+                const news = await this.fetchSportsNews();
+                if (!news || news.length === 0) {
+                    container.innerHTML = this.getEmptyState('لا توجد أخبار حالياً','جرب لاحقاً','fas fa-newspaper');
+                    return;
+                }
+                container.innerHTML = '';
+                news.forEach(article => {
+                    const card = document.createElement('div');
+                    card.className = 'channel-card fade-in';
+                    card.innerHTML = `
+                        <div class="channel-header" style="height:120px;">
+                            <img src="${article.urlToImage || 'https://placehold.co/400x200?text=News'}" class="channel-image" alt="news" loading="lazy">
+                        </div>
+                        <div class="channel-content">
+                            <h3 class="channel-name">${article.title}</h3>
+                            <p class="channel-desc">${article.description || ''}</p>
+                            <div class="channel-actions">
+                                <a href="${article.url}" target="_blank" class="channel-action-btn play-btn" style="text-decoration:none;">
+                                    <i class="fas fa-external-link-alt"></i> <span>اقرأ المزيد</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
             }
             
             populateFilters() {
@@ -4162,6 +4344,136 @@
             handlePremiumUpgrade: (btn) => tvnaApp.handlePremiumUpgrade(btn),
             logout: () => tvnaApp.logout()
         };
+        // تعطيل كليك يمين واختصارات الفحص
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C')) ||
+                (e.ctrlKey && e.key === 'U')
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        // ... باقي الكود ...
+        // Light/Dark Mode
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                document.body.classList.remove('dark-mode');
+                document.body.classList.add('light-mode');
+            } else {
+                document.body.classList.remove('light-mode');
+                document.body.classList.add('dark-mode');
+            }
+        }
+        // عند تحميل الصفحة طبّق الوضع المحفوظ
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('tvna_theme') || 'dark';
+            applyTheme(savedTheme);
+            // غيّر أيقونة الزر
+            const themeBtn = document.getElementById('themeBtn');
+            if (themeBtn) {
+                const icon = themeBtn.querySelector('i');
+                if (savedTheme === 'light') {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            }
+        });
+        // عند الضغط على زر الوضع
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeBtn = document.getElementById('themeBtn');
+            if (themeBtn) {
+                themeBtn.addEventListener('click', function() {
+                    const isLight = document.body.classList.contains('light-mode');
+                    const newTheme = isLight ? 'dark' : 'light';
+                    applyTheme(newTheme);
+                    localStorage.setItem('tvna_theme', newTheme);
+                    // غيّر أيقونة الزر
+                    const icon = themeBtn.querySelector('i');
+                    if (newTheme === 'light') {
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    } else {
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
+            }
+        });
+        // إضافة دوال عرض modals للإعدادات والملف الشخصي والإشعارات
+        showProfile() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h2 class="modal-title"><i class="fas fa-user"></i> الملف الشخصي</h2>
+                    <div style="text-align:center; margin-bottom:1.5rem;">
+                        <img src="${this.currentUser?.avatar || 'https://placehold.co/100x100?text=User'}" style="width:80px;height:80px;border-radius:50%;margin-bottom:1rem;">
+                        <div style="font-weight:700;">${this.currentUser?.username || ''}</div>
+                        <div style="font-size:0.9rem;opacity:0.7;">${this.currentUser?.email || ''}</div>
+                        <div style="margin-top:0.5rem;">عضوية: <span style="font-weight:700;">${this.currentUser?.membershipType || 'free'}</span></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        showSettings() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h2 class="modal-title"><i class="fas fa-cog"></i> الإعدادات</h2>
+                    <div style="margin-bottom:1.5rem;">
+                        <div style="margin-bottom:1rem;">تغيير المظهر:
+                            <button onclick="document.getElementById('themeBtn').click();" style="margin-right:1rem;">تبديل الوضع</button>
+                        </div>
+                        <div style="margin-bottom:1rem;">إشعارات: <span style="color:var(--success);font-weight:700;">مفعلة</span></div>
+                        <div style="margin-bottom:1rem;">لغة: <span style="font-weight:700;">العربية</span></div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        showNotifications() {
+            const modal = document.createElement('div');
+            modal.className = 'modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h2 class="modal-title"><i class="fas fa-bell"></i> الإشعارات</h2>
+                    <ul style="list-style:none;padding:0;max-height:300px;overflow-y:auto;">
+                        <li style="margin-bottom:1rem;">🎉 تم إضافة قنوات جديدة اليوم!</li>
+                        <li style="margin-bottom:1rem;">⚡ تمت ترقية البنية التحتية للخوادم.</li>
+                        <li style="margin-bottom:1rem;">📢 تابع آخر الأخبار الرياضية في تبويب الأخبار.</li>
+                    </ul>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        // ربط الأزرار في الهيدر
+        document.addEventListener('DOMContentLoaded', function() {
+            const notifBtn = document.getElementById('notificationBtn');
+            if (notifBtn) notifBtn.addEventListener('click', () => tvnaApp.showNotifications());
+            // زر الملف الشخصي والإعدادات من قائمة المستخدم
+            window.showProfile = () => tvnaApp.showProfile();
+            window.showSettings = () => tvnaApp.showSettings();
+        });
     </script>
 </body>
 </html>
