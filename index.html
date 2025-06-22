@@ -4329,6 +4329,67 @@
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(email);
             }
+
+            showProfile() {
+                const modal = document.createElement('div');
+                modal.className = 'modal show';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <h2 class="modal-title"><i class="fas fa-user"></i> الملف الشخصي</h2>
+                        <div style="text-align:center; margin-bottom:1.5rem;">
+                            <img src="${this.currentUser?.avatar || 'https://placehold.co/100x100?text=User'}" style="width:80px;height:80px;border-radius:50%;margin-bottom:1rem;">
+                            <div style="font-weight:700;">${this.currentUser?.username || ''}</div>
+                            <div style="font-size:0.9rem;opacity:0.7;">${this.currentUser?.email || ''}</div>
+                            <div style="margin-top:0.5rem;">عضوية: <span style="font-weight:700;">${this.currentUser?.membershipType || 'free'}</span></div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.body.style.overflow = 'hidden';
+            }
+            showSettings() {
+                const modal = document.createElement('div');
+                modal.className = 'modal show';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <h2 class="modal-title"><i class="fas fa-cog"></i> الإعدادات</h2>
+                        <div style="margin-bottom:1.5rem;">
+                            <div style="margin-bottom:1rem;">تغيير المظهر:
+                                <button onclick="document.getElementById('themeBtn').click();" style="margin-right:1rem;">تبديل الوضع</button>
+                            </div>
+                            <div style="margin-bottom:1rem;">إشعارات: <span style="color:var(--success);font-weight:700;">مفعلة</span></div>
+                            <div style="margin-bottom:1rem;">لغة: <span style="font-weight:700;">العربية</span></div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.body.style.overflow = 'hidden';
+            }
+            showNotifications() {
+                const modal = document.createElement('div');
+                modal.className = 'modal show';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <h2 class="modal-title"><i class="fas fa-bell"></i> الإشعارات</h2>
+                        <ul style="list-style:none;padding:0;max-height:300px;overflow-y:auto;">
+                            <li style="margin-bottom:1rem;">🎉 تم إضافة قنوات جديدة اليوم!</li>
+                            <li style="margin-bottom:1rem;">⚡ تمت ترقية البنية التحتية للخوادم.</li>
+                            <li style="margin-bottom:1rem;">📢 تابع آخر الأخبار الرياضية في تبويب الأخبار.</li>
+                        </ul>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                document.body.style.overflow = 'hidden';
+            }
         }
         
         // Initialize the application
@@ -4406,67 +4467,6 @@
             }
         });
         // إضافة دوال عرض modals للإعدادات والملف الشخصي والإشعارات
-        showProfile() {
-            const modal = document.createElement('div');
-            modal.className = 'modal show';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
-                        <i class="fas fa-times"></i>
-                    </div>
-                    <h2 class="modal-title"><i class="fas fa-user"></i> الملف الشخصي</h2>
-                    <div style="text-align:center; margin-bottom:1.5rem;">
-                        <img src="${this.currentUser?.avatar || 'https://placehold.co/100x100?text=User'}" style="width:80px;height:80px;border-radius:50%;margin-bottom:1rem;">
-                        <div style="font-weight:700;">${this.currentUser?.username || ''}</div>
-                        <div style="font-size:0.9rem;opacity:0.7;">${this.currentUser?.email || ''}</div>
-                        <div style="margin-top:0.5rem;">عضوية: <span style="font-weight:700;">${this.currentUser?.membershipType || 'free'}</span></div>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden';
-        }
-        showSettings() {
-            const modal = document.createElement('div');
-            modal.className = 'modal show';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
-                        <i class="fas fa-times"></i>
-                    </div>
-                    <h2 class="modal-title"><i class="fas fa-cog"></i> الإعدادات</h2>
-                    <div style="margin-bottom:1.5rem;">
-                        <div style="margin-bottom:1rem;">تغيير المظهر:
-                            <button onclick="document.getElementById('themeBtn').click();" style="margin-right:1rem;">تبديل الوضع</button>
-                        </div>
-                        <div style="margin-bottom:1rem;">إشعارات: <span style="color:var(--success);font-weight:700;">مفعلة</span></div>
-                        <div style="margin-bottom:1rem;">لغة: <span style="font-weight:700;">العربية</span></div>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden';
-        }
-        showNotifications() {
-            const modal = document.createElement('div');
-            modal.className = 'modal show';
-            modal.innerHTML = `
-                <div class="modal-content">
-                    <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
-                        <i class="fas fa-times"></i>
-                    </div>
-                    <h2 class="modal-title"><i class="fas fa-bell"></i> الإشعارات</h2>
-                    <ul style="list-style:none;padding:0;max-height:300px;overflow-y:auto;">
-                        <li style="margin-bottom:1rem;">🎉 تم إضافة قنوات جديدة اليوم!</li>
-                        <li style="margin-bottom:1rem;">⚡ تمت ترقية البنية التحتية للخوادم.</li>
-                        <li style="margin-bottom:1rem;">📢 تابع آخر الأخبار الرياضية في تبويب الأخبار.</li>
-                    </ul>
-                </div>
-            `;
-            document.body.appendChild(modal);
-            document.body.style.overflow = 'hidden';
-        }
-        // ربط الأزرار في الهيدر
         document.addEventListener('DOMContentLoaded', function() {
             const notifBtn = document.getElementById('notificationBtn');
             if (notifBtn) notifBtn.addEventListener('click', () => tvnaApp.showNotifications());
