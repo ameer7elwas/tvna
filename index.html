@@ -2096,6 +2096,19 @@
         body.light-mode .empty-state-icon i {
             color: var(--primary) !important;
         }
+        /* أضف هذا في CSS أو داخل <style> */
+        #notificationBtn {
+            position: relative;
+            cursor: pointer;
+            z-index: 3100;
+        }
+        #notificationsDropdown {
+            right: 0 !important;
+            left: unset !important;
+            top: 40px !important;
+            min-width: 260px;
+            direction: rtl;
+        }
     </style>
 </head>
 <body>
@@ -4360,24 +4373,50 @@
                 document.body.appendChild(modal);
                 document.body.style.overflow = 'hidden';
             }
-            showNotifications() {
-                const modal = document.createElement('div');
-                modal.className = 'modal show';
-                modal.innerHTML = `
-                    <div class="modal-content">
-                        <div class="close-modal" onclick="this.parentElement.parentElement.remove(); document.body.style.overflow = 'auto';">
-                            <i class="fas fa-times"></i>
-                        </div>
-                        <h2 class="modal-title"><i class="fas fa-bell"></i> الإشعارات</h2>
-                        <ul style="list-style:none;padding:0;max-height:300px;overflow-y:auto;">
-                            <li style="margin-bottom:1rem;">🎉 تم إضافة قنوات جديدة اليوم!</li>
-                            <li style="margin-bottom:1rem;">⚡ تمت ترقية البنية التحتية للخوادم.</li>
-                            <li style="margin-bottom:1rem;">📢 تابع آخر الأخبار الرياضية في تبويب الأخبار.</li>
-                        </ul>
-                    </div>
+            showNotificationsDropdown() {
+                // إزالة أي قائمة إشعارات سابقة
+                const oldDropdown = document.getElementById('notificationsDropdown');
+                if (oldDropdown) oldDropdown.remove();
+                // حدد الزر
+                const notifBtn = document.getElementById('notificationBtn');
+                if (!notifBtn) { console.log('notificationBtn not found'); return; }
+                // إنشاء القائمة المنسدلة
+                const dropdown = document.createElement('div');
+                dropdown.id = 'notificationsDropdown';
+                dropdown.style.cssText = `
+                    position: absolute;
+                    top: 40px;
+                    right: 0;
+                    min-width: 260px;
+                    background: #222;
+                    color: #fff;
+                    border-radius: 16px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+                    z-index: 99999;
+                    padding: 1rem 0.5rem;
+                    border: 2px solid #4361ee;
+                    font-size: 1rem;
+                    direction: rtl;
                 `;
-                document.body.appendChild(modal);
-                document.body.style.overflow = 'hidden';
+                dropdown.innerHTML = `
+                    <div style=\"font-weight:700; margin-bottom:0.7rem; padding:0 1rem;\">الإشعارات</div>
+                    <ul style=\"list-style:none;padding:0;max-height:300px;overflow-y:auto;\">
+                        <li style=\"margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;\"><span>🎉</span> تم إضافة قنوات جديدة اليوم!</li>
+                        <li style=\"margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;\"><span>⚡</span> تمت ترقية البنية التحتية للخوادم.</li>
+                        <li style=\"margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;\"><span>📢</span> تابع آخر الأخبار الرياضية في تبويب الأخبار.</li>
+                    </ul>
+                `;
+                notifBtn.appendChild(dropdown);
+                console.log('Dropdown appended!');
+                // إغلاق عند الضغط خارج القائمة
+                setTimeout(() => {
+                    document.addEventListener('click', function closeDropdown(e) {
+                        if (!dropdown.contains(e.target) && e.target.id !== 'notificationBtn' && !e.target.closest('#notificationBtn')) {
+                            dropdown.remove();
+                            document.removeEventListener('click', closeDropdown);
+                        }
+                    });
+                }, 100);
             }
         }
         
@@ -4456,12 +4495,9 @@
             }
         });
        
-        document.addEventListener('DOMContentLoaded', function() {
-            const notifBtn = document.getElementById('notificationBtn');
-            if (notifBtn) notifBtn.addEventListener('click', () => tvnaApp.showNotifications());
-            // زر الملف الشخصي والإعدادات من قائمة المستخدم
-            window.showProfile = () => tvnaApp.showProfile();
-            window.showSettings = () => tvnaApp.showSettings();
+        document.getElementById('notificationBtn').addEventListener('click', function(e) {
+            e.stopPropagation();
+            tvnaApp.showNotificationsDropdown();
         });
 
         window.tvnaApp = tvnaApp;
