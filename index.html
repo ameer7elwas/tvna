@@ -2744,6 +2744,7 @@
                   markAllReadBtn: document.getElementById('markAllReadBtn')
                 };
                 this.notifications = [];
+                this.lastNotifiedIds = [];
                 
                 this.init();
             }
@@ -4609,9 +4610,25 @@
               }
               const notifications = await this.fetchUserNotifications();
               const read = this.getReadNotifications();
-              const unreadCount = notifications.filter(n => !read.includes(n.id)).length;
+              const unread = notifications.filter(n => !read.includes(n.id));
+              const unreadCount = unread.length;
               this.notificationElements.badge.textContent = unreadCount > 0 ? unreadCount : '';
               this.notificationElements.badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+              // إشعار منبثق وصوت عند وجود إشعار جديد لم يتم تنبيهه
+              if (unread.length > 0) {
+                const newOnes = unread.filter(n => !this.lastNotifiedIds.includes(n.id));
+                if (newOnes.length > 0) {
+                  // أظهر toast لكل إشعار جديد
+                  newOnes.forEach(n => {
+                    this.showToast(`<b>${n.title_ar || n.title}</b><br>${n.message_ar || n.message}`, 'info', 4000);
+                  });
+                  // شغل الصوت
+                  const audio = document.getElementById('notifSound');
+                  if (audio) { audio.currentTime = 0; audio.play(); }
+                  // سجل آخر إشعارات تم تنبيهها
+                  this.lastNotifiedIds = [...this.lastNotifiedIds, ...newOnes.map(n => n.id)].slice(-30);
+                }
+              }
             }
         }
         
@@ -4750,5 +4767,6 @@
           }
         });
     </script>
+    <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3" preload="auto"></audio>
 </body>
 </html>
