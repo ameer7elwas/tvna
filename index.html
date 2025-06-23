@@ -2241,7 +2241,7 @@
                         <div class="section-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <h2 class="section-title">آخر الأخبار العربية الموثوقة</h2>
+                        <h2 class="section-title">آخر الأخبار العربية </h2>
                     </div>
                     <div class="section-controls">
                         <div class="live-badge">مباشر</div>
@@ -4202,7 +4202,7 @@
             }
         };
 
-        // مصادر الأخبار العربية الموثوقة
+        // مصادر الأخبار العربية 
         const newsSources = {
           all: [
             'https://www.aljazeera.net/aljazeera/rss',
@@ -4235,7 +4235,6 @@
           ]
         };
 
-        // دالة جلب وتحويل RSS إلى JSON
         async function fetchRSS(url) {
           try {
             const resp = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
@@ -4245,7 +4244,6 @@
           }
         }
 
-        // تحميل الأخبار حسب الفئة
         async function loadNews(type = 'all') {
           const grid = document.getElementById('newsCardsGrid');
           grid.innerHTML = '<div style="text-align:center;padding:2rem;">جاري تحميل الأخبار...</div>';
