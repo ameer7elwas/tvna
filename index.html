@@ -1403,12 +1403,19 @@
         /* Toast Notifications */
         .toast-container {
             position: fixed;
-            top: 2rem;
-            right: 2rem;
-            z-index: 4000;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 99999 !important;
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            min-width: 320px;
+            max-width: 90vw;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
         }
 
         .toast {
@@ -4766,6 +4773,34 @@
             });
           }
         });
+
+        // تفعيل الصوت بعد أول تفاعل
+        (function enableNotifSoundOnUserGesture(){
+          let audio = document.getElementById('notifSound');
+          if (!audio) return;
+          function unlock(){
+            audio.play().catch(()=>{});
+            audio.pause();
+            audio.currentTime = 0;
+            window.removeEventListener('click', unlock);
+            window.removeEventListener('touchstart', unlock);
+          }
+          window.addEventListener('click', unlock);
+          window.addEventListener('touchstart', unlock);
+        })();
+
+        // ... داخل updateNotificationBadge بعد showToast ...
+        if ("Notification" in window && Notification.permission === "granted") {
+          newOnes.forEach(n => {
+            new Notification(n.title_ar || n.title, {
+              body: n.message_ar || n.message,
+              icon: '/favicon.ico',
+              silent: true
+            });
+          });
+        } else if ("Notification" in window && Notification.permission !== "denied") {
+          Notification.requestPermission();
+        }
     </script>
     <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3" preload="auto"></audio>
 </body>
