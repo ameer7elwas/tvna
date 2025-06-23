@@ -920,10 +920,23 @@
             box-shadow: 0 4px 18px 0 rgba(67,97,238,0.10);
             transition: all 0.28s cubic-bezier(.23,1.12,.72,1.01);
             position: relative;
-            border: 1.5px solid var(--glass-border);
+            border: 2.5px solid;
+            border-image: linear-gradient(90deg, #7c3aed, #ff9e00 80%) 1;
             cursor: pointer;
             display: flex;
             flex-direction: column;
+            transition: transform 0.35s cubic-bezier(.23,1.12,.72,1.01), box-shadow 0.35s cubic-bezier(.23,1.12,.72,1.01);
+        }
+        .channel-card:hover {
+            transform: translateY(-8px) scale(1.025);
+            box-shadow: 0 6px 18px 0 #7c3aed33, 0 1.5px 8px 0 #7c3aed22;
+            z-index: 10;
+        }
+        @media (max-width: 600px) {
+          .channel-card:hover {
+            transform: none !important;
+            box-shadow: none !important;
+          }
         }
         .channel-header {
             position: relative;
@@ -1330,22 +1343,47 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: black;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.98);
             z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s;
         }
-
         .video-player.show {
-            display: block;
+            display: flex;
+            opacity: 1;
         }
-
         #player {
-            width: 100%;
-            height: 100%;
+            width: 90vw;
+            max-width: 900px;
+            height: 60vh;
+            max-height: 80vh;
             background: black;
+            border-radius: 18px;
+            box-shadow: 0 8px 40px #000a;
         }
-
+        .player-info {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            z-index: 3001;
+        }
+        .player-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .player-category {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
         .player-controls {
             position: absolute;
             bottom: 2rem;
@@ -1356,7 +1394,6 @@
             gap: 1.5rem;
             z-index: 3001;
         }
-
         .player-btn {
             width: 60px;
             height: 60px;
@@ -1371,41 +1408,15 @@
             transition: all 0.3s ease;
             border: 1px solid var(--glass-border);
         }
-
         .player-btn:hover {
             background: var(--primary);
             transform: scale(1.1);
         }
-
-        .player-info {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            border: 1px solid var(--glass-border);
-            z-index: 3001;
-        }
-
-        .player-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .player-category {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        /* Toast Notifications */
         .toast-container {
             position: fixed;
-            top: 50%;
+            top: 32px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%, 0);
             z-index: 99999 !important;
             display: flex;
             flex-direction: column;
@@ -1413,6 +1424,7 @@
             min-width: 340px;
             max-width: 95vw;
             pointer-events: none;
+            transition: opacity 0.4s, top 0.4s;
         }
         .toast {
             pointer-events: auto;
@@ -1431,7 +1443,13 @@
             gap: 1.2rem;
             border: 2.5px solid #4ecdc4;
             position: relative;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(.23,1.12,.72,1.01), opacity 0.4s, transform 0.4s;
+            opacity: 0;
+            transform: translateY(-40px);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
         }
         .toast-icon {
             font-size: 2.5rem !important;
@@ -1456,43 +1474,47 @@
             text-align: center;
             flex: 1;
         }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            border-color: var(--success);
-        }
-
-        .toast.error {
-            border-color: var(--danger);
-        }
-
-        .toast.warning {
-            border-color: var(--warning);
-        }
-
         .toast-title {
             font-weight: 700;
             margin-bottom: 0.2rem;
         }
-
         .toast-message {
             font-size: 0.9rem;
             opacity: 0.8;
         }
-
         .toast-close {
             cursor: pointer;
             opacity: 0.6;
             transition: opacity 0.3s ease;
         }
-
         .toast-close:hover {
             opacity: 1;
         }
-
+        .toast.success {
+            border-color: var(--success);
+        }
+        .toast.error {
+            border-color: var(--danger);
+        }
+        .toast.warning {
+            border-color: var(--warning);
+        }
+        .toast-title {
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+        .toast-message {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .toast-close {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+        .toast-close:hover {
+            opacity: 1;
+        }
         /* Footer Enhanced */
         footer {
             background: rgba(10, 10, 10, 0.95);
@@ -1502,7 +1524,6 @@
             border-top: 1px solid var(--glass-border);
             position: relative;
         }
-
         footer::before {
             content: '';
             position: absolute;
@@ -1512,7 +1533,6 @@
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--primary), transparent);
         }
-
         .footer-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1520,7 +1540,6 @@
             max-width: 1400px;
             margin: 0 auto;
         }
-
         .footer-col h3 {
             font-size: 1.5rem;
             margin-bottom: 2rem;
@@ -1530,21 +1549,17 @@
             display: inline-block;
             font-weight: 800;
         }
-
         .footer-col p {
             color: rgba(255, 255, 255, 0.8);
             line-height: 1.6;
             margin-bottom: 1.5rem;
         }
-
         .footer-links {
             list-style: none;
         }
-
         .footer-links li {
             margin-bottom: 1rem;
         }
-
         .footer-links a {
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
@@ -1555,18 +1570,15 @@
             padding: 0.5rem 0;
             font-weight: 500;
         }
-
         .footer-links a:hover {
             color: var(--primary);
             transform: translateX(10px);
         }
-
         .social-links {
             display: flex;
             gap: 1rem;
             margin-top: 2rem;
         }
-
         .social-link {
             width: 50px;
             height: 50px;
@@ -1582,19 +1594,16 @@
             text-decoration: none;
             color: white;
         }
-
         .social-link:hover {
             background: var(--primary);
             transform: translateY(-5px);
             box-shadow: var(--shadow-light);
         }
-
         .newsletter-form {
             display: flex;
             margin-top: 1.5rem;
             gap: 0.5rem;
         }
-
         .newsletter-input {
             flex: 1;
             padding: 1rem;
@@ -1604,11 +1613,9 @@
             color: white;
             backdrop-filter: blur(10px);
         }
-
         .newsletter-input::placeholder {
             color: rgba(255, 255, 255, 0.5);
         }
-
         .newsletter-btn {
             background: var(--primary);
             border: none;
@@ -1618,12 +1625,10 @@
             transition: all 0.3s ease;
             color: white;
         }
-
         .newsletter-btn:hover {
             background: var(--secondary);
             transform: scale(1.05);
         }
-
         .copyright {
             text-align: center;
             padding-top: 3rem;
@@ -1632,14 +1637,12 @@
             font-size: 0.9rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         /* Responsive Design Enhanced */
         @media (max-width: 1200px) {
             .channels-grid {
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
         }
-
         @media (max-width: 992px) {
             .section {
                 padding: 2rem 1rem;
@@ -1654,7 +1657,6 @@
                 font-size: 2.5rem;
             }
         }
-
         @media (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -1702,7 +1704,6 @@
                 padding: 2rem;
             }
         }
-
         @media (max-width: 480px) {
             .logo-text {
                 font-size: 1.5rem;
@@ -1736,12 +1737,10 @@
                 margin: 0 1rem;
             }
         }
-
         /* Animation Classes */
         .fade-in {
             animation: fadeIn 0.6s ease-out;
         }
-
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -1752,11 +1751,9 @@
                 transform: translateY(0);
             }
         }
-
         .slide-in-left {
             animation: slideInLeft 0.6s ease-out;
         }
-
         @keyframes slideInLeft {
             from {
                 opacity: 0;
@@ -1767,11 +1764,9 @@
                 transform: translateX(0);
             }
         }
-
         .slide-in-right {
             animation: slideInRight 0.6s ease-out;
         }
-
         @keyframes slideInRight {
             from {
                 opacity: 0;
@@ -1782,7 +1777,6 @@
                 transform: translateX(0);
             }
         }
-
         /* Loading States */
         .loading-skeleton {
             background: linear-gradient(90deg, 
@@ -1793,61 +1787,51 @@
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
         }
-
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-
         .skeleton-card {
             background: var(--glass);
             border-radius: 25px;
             padding: 1rem;
             margin-bottom: 1rem;
         }
-
         .skeleton-header {
             height: 200px;
             border-radius: 20px;
             margin-bottom: 1rem;
         }
-
         .skeleton-title {
             height: 24px;
             width: 70%;
             border-radius: 12px;
             margin-bottom: 0.5rem;
         }
-
         .skeleton-text {
             height: 16px;
             width: 90%;
             border-radius: 8px;
             margin-bottom: 0.5rem;
         }
-
         .skeleton-actions {
             display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
         }
-
         .skeleton-btn {
             flex: 1;
             height: 40px;
             border-radius: 10px;
         }
-
         /* Tab Content Animation */
         .tab-content {
             display: none;
             animation: tabFadeIn 0.3s ease-out;
         }
-
         .tab-content.active {
             display: block;
         }
-
         @keyframes tabFadeIn {
             from {
                 opacity: 0;
@@ -1858,7 +1842,6 @@
                 transform: translateY(0);
             }
         }
-
         /* Search Results */
         .search-results {
             position: absolute;
@@ -1874,7 +1857,6 @@
             overflow-y: auto;
             z-index: 1001;
         }
-
         .search-result-item {
             padding: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -1884,15 +1866,12 @@
             align-items: center;
             gap: 1rem;
         }
-
         .search-result-item:hover {
             background: rgba(67, 97, 238, 0.2);
         }
-
         .search-result-item:last-child {
             border-bottom: none;
         }
-
         .search-result-icon {
             width: 40px;
             height: 40px;
@@ -1902,88 +1881,71 @@
             align-items: center;
             justify-content: center;
         }
-
         .search-result-content {
             flex: 1;
         }
-
         .search-result-title {
             font-weight: 600;
             margin-bottom: 0.2rem;
         }
-
         .search-result-category {
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.6);
         }
-
         /* Empty States */
         .empty-state {
             text-align: center;
             padding: 4rem 2rem;
             color: rgba(255, 255, 255, 0.6);
         }
-
         .empty-state-icon {
             font-size: 4rem;
             margin-bottom: 2rem;
             color: rgba(255, 255, 255, 0.3);
         }
-
         .empty-state-title {
             font-size: 1.5rem;
             margin-bottom: 1rem;
             font-weight: 700;
         }
-
         .empty-state-message {
             font-size: 1rem;
             line-height: 1.6;
             max-width: 400px;
             margin: 0 auto;
         }
-
         /* Utility Classes */
         .text-gradient {
             background: var(--premium);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .glass-bg {
             background: var(--glass);
             backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
         }
-
         .premium-bg {
             background: var(--premium);
         }
-
         .shadow-light {
             box-shadow: var(--shadow-light);
         }
-
         .shadow-medium {
             box-shadow: var(--shadow-medium);
         }
-
         .shadow-heavy {
             box-shadow: var(--shadow-heavy);
         }
-
         .rounded-xl {
             border-radius: 20px;
         }
-
         .rounded-2xl {
             border-radius: 25px;
         }
-
         .rounded-3xl {
             border-radius: 30px;
         }
-
         .news-filters {
             display: flex;
             gap: 1.2rem;
@@ -2017,9 +1979,7 @@
             color: #fff;
             border-color: var(--accent);
         }
-
         /* أضف أو عدل هذه الـ media queries في نهاية ووسط قسم الستايل */
-
         @media (max-width: 600px) {
           .channels-grid,
           .news-cards-grid,
@@ -2225,7 +2185,6 @@
             border-radius: 20px !important;
           }
         }
-
         /* تحسينات إضافية للعرض الضيق جدًا */
         @media (max-width: 400px) {
           .channels-grid,
@@ -2246,7 +2205,6 @@
             border-radius: 8px !important;
           }
         }
-
         /* إشعارات المستخدم المنسدلة */
         .notifications-dropdown {
           min-width: 320px;
@@ -2300,6 +2258,34 @@
         .notification-type-badge.warning { background: var(--warning); }
         .notification-type-badge.update { background: var(--success); }
         .notification-type-badge.promotion { background: var(--accent); }
+        /* إطار برتقالي حول كارد الإعلان */
+        .ads-carousel .ad-slide {
+          border: 3px solid #ff9e00 !important;
+          border-radius: 25px !important;
+          box-sizing: border-box;
+        }
+        /* إطار برتقالي حول كاردات القنوات */
+        .channel-card {
+          border: 3px solid #ff9e00 !important;
+          border-radius: 25px !important;
+          box-sizing: border-box;
+        }
+        .channel-card, .news-card, .stat-card, .welcome-card, .skeleton-card, .ads-carousel .ad-slide {
+          border: 3px solid #7c3aed;
+          border-radius: 32px !important;
+          box-sizing: border-box;
+        }
+        .video-player.show #player,
+        .video-player #player {
+          width: 100vw !important;
+          height: 100vh !important;
+          max-width: none !important;
+          max-height: none !important;
+          border-radius: 0 !important;
+          background: black;
+          box-shadow: none !important;
+          display: block;
+        }
     </style>
 </head>
 <body>
@@ -2572,7 +2558,7 @@
                         <div class="section-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <h2 class="section-title">آخر الأخبار العربية الموثوقة</h2>
+                        <h2 class="section-title">آخر الأخبار العربية </h2>
                     </div>
                     <div class="section-controls">
                         <div class="live-badge">مباشر</div>
@@ -4080,10 +4066,10 @@
             showVideoPlayer(channel) {
                 this.elements.videoPlayer.classList.add('show');
                 document.body.style.overflow = 'hidden';
-                
+                const playerInfo = this.elements.videoPlayer.querySelector('.player-info');
+                if(playerInfo) playerInfo.style.display = 'block';
                 document.getElementById('playerTitle').textContent = channel.nameAr;
                 document.getElementById('playerCategory').textContent = this.getCategoryNameAr(channel.category);
-                
                 // Initialize video player
                 try {
                     if (Hls.isSupported()) {
@@ -4093,6 +4079,7 @@
                         hls.on(Hls.Events.MANIFEST_PARSED, () => {
                             this.elements.playerElement.play();
                         });
+                        // إخفاء اسم القناة بعد التشغيل
                     } else if (this.elements.playerElement.canPlayType('application/vnd.apple.mpegurl')) {
                         this.elements.playerElement.src = channel.url;
                         this.elements.playerElement.addEventListener('loadedmetadata', () => {
@@ -4495,6 +4482,12 @@
                 setTimeout(() => {
                     this.removeToast(toast);
                 }, duration);
+                
+                // تشغيل صوت الإشعار مع كل توست
+                try {
+                  const audio = document.getElementById('notifSound');
+                  if(audio){ audio.currentTime = 0; audio.play().catch(()=>{}); }
+                } catch(e){}
             }
             
             removeToast(toast) {
@@ -4626,6 +4619,7 @@
               const unreadCount = unread.length;
               this.notificationElements.badge.textContent = unreadCount > 0 ? unreadCount : '';
               this.notificationElements.badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+              // إشعار منبثق وصوت عند وجود إشعار جديد لم يتم تنبيهه
               if (unread.length > 0) {
                 const newOnes = unread.filter(n => !this.lastNotifiedIds.includes(n.id));
                 if (newOnes.length > 0) {
@@ -4670,7 +4664,7 @@
             }
         };
 
-        // مصادر الأخبار العربية الموثوقة
+        // مصادر الأخبار العربية 
         const newsSources = {
           all: [
             'https://www.aljazeera.net/aljazeera/rss',
@@ -4794,19 +4788,56 @@
         })();
 
         // ... داخل updateNotificationBadge بعد showToast ...
-        if ("Notification" in window && Notification.permission === "granted") {
-          newOnes.forEach(n => {
-            new Notification(n.title_ar || n.title, {
-              body: n.message_ar || n.message,
-              icon: '/favicon.ico',
-              silent: true
+        if ("Notification" in window) {
+          if (Notification.permission === "granted") {
+            newOnes.forEach(n => {
+              new Notification(n.title_ar || n.title, {
+                body: n.message_ar || n.message,
+                icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827349.png',
+                silent: false // (لن يصدر صوت فعلي لكن بعض الأنظمة تعرض اهتزاز/وميض)
+              });
             });
-          });
-        } else if ("Notification" in window && Notification.permission !== "denied") {
-          Notification.requestPermission();
+          } else if (Notification.permission !== "denied") {
+            Notification.requestPermission().then(p => {
+              if (p === "granted") {
+                newOnes.forEach(n => {
+                  new Notification(n.title_ar || n.title, {
+                    body: n.message_ar || n.message,
+                    icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827349.png',
+                    silent: false
+                  });
+                });
+              }
+            });
+          }
         }
+
+        document.addEventListener('DOMContentLoaded', function(){
+          var btn = document.getElementById('testNotifSoundBtn');
+          var msg = document.getElementById('notifSoundMsg');
+          if(btn){
+            btn.onclick = function(){
+              var audio = document.getElementById('notifSound');
+              if(audio){
+                audio.currentTime = 0;
+                audio.play().then(()=>{
+                  if(window.tvnaApp) tvnaApp.showToast('تم تشغيل صوت الإشعار بنجاح','success',2000);
+                  if(msg) msg.style.display = 'none';
+                }).catch(()=>{
+                  if(window.tvnaApp) tvnaApp.showToast('يرجى الضغط مرة أخرى أو السماح بالصوت من المتصفح','warning',3000);
+                  if(msg) msg.style.display = 'block';
+                });
+              }
+            };
+          }
+        });
     </script>
     <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b5fae3b6.mp3" preload="auto"></audio>
-    <div style="position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:7px 18px;border-radius:12px;font-size:1rem;z-index:99999;">  </div>
+    <div style="position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:7px 18px;border-radius:12px;font-size:1rem;z-index:99999;"></div>
+    <div style="text-align:center;margin:18px 0;">
+      <button id="testNotifSoundBtn" style="background:#ff9e00;color:#fff;font-weight:900;font-size:1.1rem;padding:12px 32px;border:none;border-radius:14px;box-shadow:0 2px 12px #0003;cursor:pointer;">اختبر صوت الإشعار 🔊</button>
+    </div>
+    <div style="text-align:center;color:#ff9e00;font-size:1rem;margin-bottom:18px;">.</div>
+    <div id="notifSoundMsg" style="text-align:center;color:#e74c3c;font-size:1.1rem;margin-bottom:10px;display:none;"></div>
 </body>
 </html>
