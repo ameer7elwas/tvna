@@ -877,14 +877,14 @@
         /* Channels Grid Enhanced */
         .channels-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 2rem;
             margin-top: 2rem;
         }
 
         .channel-card {
-            min-width: 220px;
-            max-width: 320px;
+            min-width: 260px;
+            max-width: 340px;
             width: 100%;
             background: var(--glass);
             backdrop-filter: blur(18px);
@@ -895,10 +895,13 @@
             position: relative;
             border: 1.5px solid var(--glass-border);
             cursor: pointer;
+            aspect-ratio: 2/1;
+            display: flex;
+            flex-direction: column;
         }
         .channel-header {
             position: relative;
-            height: 150px;
+            height: 160px;
             overflow: hidden;
         }
         .channel-image {
@@ -3574,7 +3577,7 @@
                                  title="${isFavorite ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}">
                                 <i class="fas fa-heart"></i>
                             </div>
-                            <div class="channel-action-btn" data-id="${channel.id}" data-action="share" title="مشاركة">
+                            <div class="channel-action-btn" data-id="${channel.id}" data-action="share" title="مشاركة" onclick="event.stopPropagation(); tvnaApp.shareChannelWithLink('${channel.id}')">
                                 <i class="fas fa-share"></i>
                             </div>
                             <div class="channel-action-btn play-btn" data-id="${channel.id}" data-action="play">
@@ -4162,7 +4165,20 @@
             selectSearchResult: (id) => tvnaApp.selectSearchResult(id),
             showAllSearchResults: () => tvnaApp.showAllSearchResults(),
             handlePremiumUpgrade: (btn) => tvnaApp.handlePremiumUpgrade(btn),
-            logout: () => tvnaApp.logout()
+            logout: () => tvnaApp.logout(),
+            shareChannelWithLink: function(channelId) {
+                const url = window.location.origin + '/channel/' + channelId;
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'رابط القناة',
+                        url
+                    });
+                } else {
+                    navigator.clipboard.writeText(url).then(() => {
+                        tvnaApp.showToast('تم نسخ رابط القناة', 'success');
+                    });
+                }
+            }
         };
     </script>
 </body>
