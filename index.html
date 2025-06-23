@@ -1409,27 +1409,52 @@
             z-index: 99999 !important;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            min-width: 320px;
-            max-width: 90vw;
+            gap: 1.5rem;
+            min-width: 340px;
+            max-width: 95vw;
             pointer-events: none;
         }
         .toast {
             pointer-events: auto;
-        }
-
-        .toast {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            border: 1px solid var(--glass-border);
+            background: rgba(20,20,30,0.97);
+            color: #fff;
+            border-radius: 22px;
+            box-shadow: 0 8px 40px 0 #0008, 0 1.5px 8px 0 #7c3aed33;
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding: 2.2rem 2.5rem 2.2rem 2.5rem;
+            min-width: 320px;
+            max-width: 95vw;
+            text-align: center;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            min-width: 300px;
-            transform: translateX(400px);
-            transition: all 0.3s ease;
+            gap: 1.2rem;
+            border: 2.5px solid #4ecdc4;
+            position: relative;
+            transition: all 0.3s;
+        }
+        .toast-icon {
+            font-size: 2.5rem !important;
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+        .toast-close {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 1.3rem;
+            color: #fff;
+            opacity: 0.7;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .toast-close:hover { opacity: 1; }
+        .toast-message {
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.7;
+            text-align: center;
+            flex: 1;
         }
 
         .toast.show {
@@ -1446,26 +1471,6 @@
 
         .toast.warning {
             border-color: var(--warning);
-        }
-
-        .toast-icon {
-            font-size: 1.2rem;
-        }
-
-        .toast.success .toast-icon {
-            color: var(--success);
-        }
-
-        .toast.error .toast-icon {
-            color: var(--danger);
-        }
-
-        .toast.warning .toast-icon {
-            color: var(--warning);
-        }
-
-        .toast-content {
-            flex: 1;
         }
 
         .toast-title {
@@ -4802,6 +4807,7 @@
           Notification.requestPermission();
         }
     </script>
-    <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfae5b2.mp3" preload="auto"></audio>
+    <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b5fae3b6.mp3" preload="auto"></audio>
+    <div style="position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:7px 18px;border-radius:12px;font-size:1rem;z-index:99999;">إذا لم تسمع صوت الإشعار، اضغط في أي مكان لتفعيله</div>
 </body>
 </html>
