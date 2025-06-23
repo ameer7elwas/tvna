@@ -883,56 +883,55 @@
         }
 
         .channel-card {
+            min-width: 180px;
+            max-width: 240px;
+            width: 100%;
             background: var(--glass);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
+            backdrop-filter: blur(16px);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: var(--shadow-medium);
-            transition: all 0.4s ease;
+            box-shadow: 0 2px 12px 0 rgba(67,97,238,0.10);
+            transition: all 0.25s cubic-bezier(.23,1.12,.72,1.01);
             position: relative;
             border: 1px solid var(--glass-border);
             cursor: pointer;
         }
-
-        .channel-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(58, 12, 163, 0.1));
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .channel-card:hover::before {
-            opacity: 1;
-        }
-
-        .channel-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: var(--shadow-heavy);
-            border-color: var(--primary);
-        }
-
         .channel-header {
             position: relative;
-            height: 200px;
+            height: 110px;
             overflow: hidden;
         }
-
         .channel-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.4s ease;
         }
-
-        .channel-card:hover .channel-image {
-            transform: scale(1.1);
+        .channel-content {
+            padding: 1rem 0.7rem 0.7rem 0.7rem;
         }
-
+        .channel-name {
+            font-size: 1.05rem;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+        }
+        .channel-category {
+            background: rgba(67, 97, 238, 0.13);
+            padding: 0.15rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .channel-category:hover {
+            background: var(--primary);
+            color: #fff;
+        }
         .channel-badges {
             position: absolute;
             top: 1rem;
@@ -3560,14 +3559,10 @@
                         <h3 class="channel-name">
                             <i class="fas fa-satellite"></i>
                             ${channel.nameAr}
-                            <span class="channel-category">${this.getCategoryNameAr(channel.category)}</span>
+                            <span class="channel-category" onclick="tvnaApp.showCategoryChannels('${channel.category}'); event.stopPropagation();">${this.getCategoryNameAr(channel.category)}</span>
                         </h3>
                         <p class="channel-desc">${channel.descriptionAr}</p>
                         <div class="channel-stats">
-                            <div class="stat">
-                                <i class="fas fa-eye"></i>
-                                <span>${this.formatNumber(channel.viewersCount)} مشاهد</span>
-                            </div>
                             <div class="stat">
                                 <i class="fas fa-star"></i>
                                 <span>${channel.rating.toFixed(1)}</span>
