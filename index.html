@@ -2558,7 +2558,7 @@
                         <div class="section-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <h2 class="section-title">آخر الأخبار العربية </h2>
+                        <h2 class="section-title">آخر الأخبار العربية الموثوقة</h2>
                     </div>
                     <div class="section-controls">
                         <div class="live-badge">مباشر</div>
@@ -4132,14 +4132,13 @@
             renderCategories() {
                 const container = document.getElementById('categoriesContent');
                 if (!container) return;
-                
                 container.innerHTML = '';
-                
                 this.categories.forEach(category => {
                     const categoryChannels = this.channels.filter(c => c.category === category.name);
-                    
+                    const isEmpty = categoryChannels.length === 0;
                     const card = document.createElement('div');
                     card.className = 'channel-card fade-in';
+                    if(isEmpty) card.style.maxWidth = '220px', card.style.minWidth = '140px', card.style.padding = '1.2rem 0.5rem 1rem 0.5rem';
                     card.innerHTML = `
                         <div class="channel-header">
                             <div style="background: var(--gradient-card); width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px);">
@@ -4157,10 +4156,6 @@
                                     <i class="fas fa-tv"></i>
                                     <span>${categoryChannels.length} قنوات</span>
                                 </div>
-                                <div class="stat">
-                                    <i class="fas fa-users"></i>
-                                    <span>${this.formatNumber(Math.floor(Math.random() * 10000) + 1000)} مشاهد</span>
-                                </div>
                             </div>
                             <div class="channel-actions">
                                 <div class="channel-action-btn play-btn" data-category="${category.name}">
@@ -4170,11 +4165,9 @@
                             </div>
                         </div>
                     `;
-                    
                     card.querySelector('.play-btn').addEventListener('click', () => {
                         this.showCategoryChannels(category.name);
                     });
-                    
                     container.appendChild(card);
                 });
             }
@@ -4664,7 +4657,7 @@
             }
         };
 
-        // مصادر الأخبار العربية 
+        // مصادر الأخبار العربية الموثوقة
         const newsSources = {
           all: [
             'https://www.aljazeera.net/aljazeera/rss',
