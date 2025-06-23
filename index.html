@@ -2234,6 +2234,60 @@
             border-radius: 8px !important;
           }
         }
+
+        /* إشعارات المستخدم المنسدلة */
+        .notifications-dropdown {
+          min-width: 320px;
+          animation: fadeIn 0.3s;
+        }
+        @media (max-width: 600px) {
+          .notifications-dropdown {
+            min-width: 95vw;
+            left: 2.5vw !important;
+            right: 2.5vw !important;
+          }
+        }
+        .notification-item {
+          padding: 1rem 1.2rem 0.7rem;
+          border-bottom: 1px solid var(--glass-border);
+          cursor: pointer;
+          transition: background 0.2s;
+          position: relative;
+        }
+        .notification-item.unread {
+          background: rgba(247,37,133,0.08);
+        }
+        .notification-item:last-child {
+          border-bottom: none;
+        }
+        .notification-title {
+          font-weight: 800;
+          font-size: 1.05rem;
+          margin-bottom: 0.3rem;
+        }
+        .notification-content {
+          font-size: 0.95rem;
+          opacity: 0.85;
+          margin-bottom: 0.2rem;
+        }
+        .notification-date {
+          font-size: 0.85rem;
+          opacity: 0.7;
+          text-align: left;
+        }
+        .notification-type-badge {
+          display: inline-block;
+          font-size: 0.8rem;
+          border-radius: 8px;
+          padding: 0.1rem 0.7rem;
+          margin-left: 0.5rem;
+          color: #fff;
+          background: var(--primary);
+        }
+        .notification-type-badge.urgent { background: var(--danger); }
+        .notification-type-badge.warning { background: var(--warning); }
+        .notification-type-badge.update { background: var(--success); }
+        .notification-type-badge.promotion { background: var(--accent); }
     </style>
 </head>
 <body>
@@ -2506,7 +2560,7 @@
                         <div class="section-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <h2 class="section-title">آخر الأخبار العربية </h2>
+                        <h2 class="section-title">آخر الأخبار العربية الموثوقة</h2>
                     </div>
                     <div class="section-controls">
                         <div class="live-badge">مباشر</div>
@@ -2626,6 +2680,15 @@
             <small>  </small>
         </div>
     </footer>
+
+    <!-- قائمة الإشعارات المنسدلة -->
+    <div class="notifications-dropdown" id="notificationsDropdown" style="display:none;position:absolute;top:60px;left:0;right:0;max-width:350px;margin:auto;z-index:2000;background:var(--glass);backdrop-filter:blur(18px);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);border:1px solid var(--glass-border);">
+      <div style="padding:1rem 1.2rem 0.5rem;font-weight:900;font-size:1.1rem;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;">
+        <span>الإشعارات</span>
+        <button id="markAllReadBtn" style="background:none;border:none;color:var(--primary);font-size:0.95rem;cursor:pointer;">تحديد كمقروء</button>
+      </div>
+      <div id="notificationsList" style="max-height:350px;overflow-y:auto;"></div>
+    </div>
 
     <script>
         // Enhanced TvNa JavaScript Application with Supabase Integration
@@ -4467,7 +4530,7 @@
             }
         };
 
-        // مصادر الأخبار العربية 
+        // مصادر الأخبار العربية الموثوقة
         const newsSources = {
           all: [
             'https://www.aljazeera.net/aljazeera/rss',
@@ -4574,6 +4637,128 @@
             });
           }
         });
+
+        // إشعارات المستخدم (واجهة المستخدم)
+        (function(){
+          const notificationBtn = document.getElementById('notificationBtn');
+          const notificationsDropdown = document.getElementById('notificationsDropdown');
+          const notificationsList = document.getElementById('notificationsList');
+          const badge = notificationBtn.querySelector('.notification-badge');
+          const markAllReadBtn = document.getElementById('markAllReadBtn');
+
+          async function fetchUserNotifications(user) {
+            if (!user) return [];
+            const res = await fetch('https://vpvvjascwgivdjyyhzwp.supabase.co/rest/v1/notifications?is_active=eq.true&order=send_date.desc', {
+              headers: {
+                apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ',
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ'
+              }
+            });
+            const notifications = await res.json();
+            return notifications.filter(n => {
+              if (!n.target_users || n.target_users.length === 0 || n.target_users.includes('all')) return true;
+              if (n.target_users.includes(user.membershipType)) return true;
+              if (n.target_users.includes(user.id)) return true;
+              return false;
+            });
+          }
+
+          function getReadNotifications() {
+            return JSON.parse(localStorage.getItem('tvna_read_notifications') || '[]');
+          }
+          function markNotificationRead(id) {
+            const read = getReadNotifications();
+            if (!read.includes(id)) {
+              read.push(id);
+              localStorage.setItem('tvna_read_notifications', JSON.stringify(read));
+            }
+          }
+          function markAllNotificationsRead(ids) {
+            localStorage.setItem('tvna_read_notifications', JSON.stringify(ids));
+          }
+
+          function renderNotifications(notifications) {
+            const read = getReadNotifications();
+            let unreadCount = 0;
+            notificationsList.innerHTML = notifications.length === 0
+              ? '<div style="padding:2rem;text-align:center;color:#888;">لا توجد إشعارات جديدة</div>'
+              : notifications.slice(0, 15).map(n => {
+                const isUnread = !read.includes(n.id);
+                if (isUnread) unreadCount++;
+                const typeClass = n.type === 'urgent' ? 'urgent' : n.type === 'warning' ? 'warning' : n.type === 'update' ? 'update' : n.type === 'promotion' ? 'promotion' : '';
+                return `<div class="notification-item${isUnread ? ' unread' : ''}" data-id="${n.id}">
+                  <span class="notification-type-badge ${typeClass}">${n.type === 'urgent' ? 'عاجل' : n.type === 'warning' ? 'تحذير' : n.type === 'update' ? 'تحديث' : n.type === 'promotion' ? 'عرض' : 'تنبيه'}</span>
+                  <div class="notification-title">${n.title_ar || n.title}</div>
+                  <div class="notification-content">${n.message_ar || n.message}</div>
+                  <div class="notification-date">${new Date(n.send_date).toLocaleString('ar-EG')}</div>
+                </div>`;
+              }).join('');
+            badge.textContent = unreadCount > 0 ? unreadCount : '';
+            badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+          }
+
+          async function loadAndShowNotifications() {
+            const user = window.tvnaApp?.currentUser;
+            if (!user) {
+              notificationsList.innerHTML = '<div style="padding:2rem;text-align:center;color:#888;">سجّل الدخول لعرض الإشعارات</div>';
+              badge.style.display = 'none';
+              return;
+            }
+            const notifications = await fetchUserNotifications(user);
+            renderNotifications(notifications);
+
+            notificationsList.querySelectorAll('.notification-item').forEach(item => {
+              item.onclick = function() {
+                markNotificationRead(this.dataset.id);
+                this.classList.remove('unread');
+                badge.textContent = Math.max(0, +badge.textContent - 1) || '';
+              };
+            });
+
+            markAllReadBtn.onclick = function() {
+              markAllNotificationsRead(notifications.map(n => n.id));
+              renderNotifications(notifications);
+            };
+          }
+
+          notificationBtn.onclick = function(e) {
+            e.stopPropagation();
+            if (notificationsDropdown.style.display === 'block') {
+              notificationsDropdown.style.display = 'none';
+            } else {
+              notificationsDropdown.style.display = 'block';
+              loadAndShowNotifications();
+            }
+          };
+          document.addEventListener('click', function(e) {
+            if (!notificationsDropdown.contains(e.target) && e.target !== notificationBtn) {
+              notificationsDropdown.style.display = 'none';
+            }
+          });
+
+          setInterval(() => {
+            if (notificationsDropdown.style.display === 'block') loadAndShowNotifications();
+            else {
+              const user = window.tvnaApp?.currentUser;
+              if (user) fetchUserNotifications(user).then(notifications => {
+                const read = getReadNotifications();
+                const unreadCount = notifications.filter(n => !read.includes(n.id)).length;
+                badge.textContent = unreadCount > 0 ? unreadCount : '';
+                badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+              });
+            }
+          }, 60000);
+
+          setTimeout(() => {
+            const user = window.tvnaApp?.currentUser;
+            if (user) fetchUserNotifications(user).then(notifications => {
+              const read = getReadNotifications();
+              const unreadCount = notifications.filter(n => !read.includes(n.id)).length;
+              badge.textContent = unreadCount > 0 ? unreadCount : '';
+              badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+            });
+          }, 2000);
+        })();
     </script>
 </body>
 </html>
