@@ -460,32 +460,31 @@
         }
 
         .welcome-card {
-            background: var(--gradient-card), rgba(255,255,255,0.07);
-            backdrop-filter: blur(30px);
-            padding: 3.5rem 2.5rem 2.5rem 2.5rem;
-            border-radius: 36px;
-            max-width: 700px;
+            background: rgba(30,32,48,0.85);
+            backdrop-filter: blur(18px) saturate(120%);
+            padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+            border-radius: 22px;
+            max-width: 410px;
             width: 100%;
-            box-shadow: 0 8px 40px 0 rgba(67,97,238,0.18), 0 1.5px 8px 0 rgba(247,37,133,0.08);
+            box-shadow: 0 4px 32px 0 rgba(67,97,238,0.13), 0 1.5px 8px 0 rgba(247,37,133,0.08);
             position: relative;
             overflow: hidden;
-            border: 2.5px solid;
-            border-image: linear-gradient(120deg, #ff9e00 10%, #4361ee 90%) 1;
+            border: 1.5px solid rgba(255,255,255,0.13);
             z-index: 1;
-            margin: 0 auto 2.5rem auto;
-            animation: cardPopIn 1s cubic-bezier(.23,1.12,.72,1.01);
+            margin: 0 auto 1.5rem auto;
+            animation: cardPopIn 0.7s cubic-bezier(.23,1.12,.72,1.01);
         }
         .welcome-card::before {
             content: '';
             position: absolute;
-            top: -40%;
-            left: -40%;
-            width: 180%;
-            height: 180%;
-            background: radial-gradient(circle at 70% 30%, rgba(67,97,238,0.10) 0%, transparent 70%),
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background: radial-gradient(circle at 70% 30%, rgba(67,97,238,0.13) 0%, transparent 70%),
                         radial-gradient(circle at 30% 70%, rgba(247,37,133,0.10) 0%, transparent 70%);
             z-index: 0;
-            animation: bgMove 12s linear infinite alternate;
+            animation: bgMove 8s linear infinite alternate;
         }
         @keyframes cardPopIn {
             0% { opacity: 0; transform: scale(0.95) translateY(40px); }
@@ -496,20 +495,20 @@
             100% { background-position: 100% 100%, 0% 0%; }
         }
         .welcome-title {
-            font-size: 2.7rem;
-            margin-bottom: 0.7rem;
+            font-size: 1.45rem;
+            margin-bottom: 0.3rem;
             position: relative;
             z-index: 2;
             font-weight: 900;
             background: linear-gradient(90deg, #ff9e00, #4361ee 80%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(255, 158, 0, 0.18);
+            text-shadow: 0 0 10px rgba(255, 158, 0, 0.10);
         }
         .welcome-subtitle {
-            font-size: 1.15rem;
-            opacity: 0.92;
-            margin-bottom: 2.2rem;
+            font-size: 0.98rem;
+            opacity: 0.93;
+            margin-bottom: 1.1rem;
             position: relative;
             z-index: 2;
             font-weight: 400;
@@ -517,56 +516,74 @@
         .stats-grid {
             display: flex;
             justify-content: center;
-            gap: 2.5rem;
+            gap: 1.1rem;
             width: 100%;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.7rem;
             position: relative;
             z-index: 2;
         }
         .stat-card {
-            background: rgba(255,255,255,0.10);
-            border: 1.5px solid var(--glass-border);
-            box-shadow: 0 2px 16px 0 rgba(67,97,238,0.10);
-            padding: 1.7rem 1.2rem 1.2rem 1.2rem;
-            border-radius: 22px;
+            background: rgba(255,255,255,0.13);
+            border: 1px solid rgba(255,255,255,0.13);
+            box-shadow: 0 1.5px 8px 0 rgba(67,97,238,0.08);
+            padding: 0.7rem 0.7rem 0.5rem 0.7rem;
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.7rem;
-            min-width: 140px;
-            max-width: 180px;
-            transition: all 0.3s cubic-bezier(.23,1.12,.72,1.01);
+            gap: 0.2rem;
+            min-width: 80px;
+            max-width: 110px;
+            transition: all 0.25s cubic-bezier(.23,1.12,.72,1.01);
             position: relative;
             overflow: hidden;
             cursor: pointer;
         }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(120deg,rgba(255,255,255,0.08) 0%,rgba(255,255,255,0.01) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .stat-card:hover::after {
+            opacity: 1;
+            animation: shineStat 0.7s linear;
+        }
+        @keyframes shineStat {
+            0% { opacity: 0; }
+            40% { opacity: 1; }
+            100% { opacity: 0; }
+        }
         .stat-card:hover {
             background: linear-gradient(120deg, rgba(67,97,238,0.18), rgba(255,158,0,0.13));
-            transform: translateY(-8px) scale(1.04) rotate(-1deg);
-            box-shadow: 0 8px 32px 0 rgba(67,97,238,0.18);
+            transform: translateY(-4px) scale(1.045) rotate(-1deg);
+            box-shadow: 0 4px 18px 0 rgba(67,97,238,0.16);
         }
         .stat-icon {
-            font-size: 2.7rem;
-            margin-bottom: 0.2rem;
+            font-size: 1.7rem;
+            margin-bottom: 0.05rem;
             background: linear-gradient(90deg, #ff9e00, #4361ee 80%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 2px 8px rgba(67,97,238,0.12));
+            filter: drop-shadow(0 1px 4px rgba(67,97,238,0.10));
         }
         .stat-value {
-            font-size: 2.3rem;
+            font-size: 1.35rem;
             font-weight: 900;
             background: linear-gradient(135deg, #4361ee, #f72585 80%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         .stat-label {
-            font-size: 1.05rem;
+            font-size: 0.85rem;
             opacity: 0.85;
             font-weight: 600;
             color: #fff;
-            text-shadow: 0 1px 8px rgba(67,97,238,0.10);
+            text-shadow: 0 1px 8px rgba(67,97,238,0.08);
         }
 
         /* Quick Actions */
