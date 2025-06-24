@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TvNa - تيڤي نا - Ameer_7elwas</title>
+    <title>TVHUB</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
@@ -15,6 +16,12 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Tajawal', sans-serif;
+        }
+        .logo-text {
+            font-family: 'Orbitron', 'Tajawal', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', 'Tajawal', sans-serif;
         }
 
         :root {
@@ -47,6 +54,8 @@
             overflow-x: hidden;
             font-weight: 400;
             line-height: 1.6;
+            direction: rtl;
+            text-align: right;
         }
 
         body::before {
@@ -115,7 +124,7 @@
         .loader-logo {
             width: 80px;
             height: 80px;
-            background: var(--premium);
+            background: linear-gradient(135deg, #7c3aed 60%, #5f27cd 100%) !important;
             border-radius: 20px;
             display: flex;
             align-items: center;
@@ -188,10 +197,10 @@
         }
 
         .logo-icon {
-            width: 55px;
-            height: 55px;
-            background: var(--premium);
-            border-radius: 15px;
+            width: 80px !important;
+            height: 80px !important;
+            background: linear-gradient(135deg, #7c3aed 60%, #5f27cd 100%) !important;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -220,12 +229,13 @@
         }
 
         .logo-text {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 900;
-            background: var(--premium);
+            background: linear-gradient(90deg, #ff9e00, #4361ee 80%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(255, 158, 0, 0.5);
+            text-shadow: 0 0 18px rgba(255, 158, 0, 0.13);
+            letter-spacing: 2px;
         }
 
         .nav-links {
@@ -1366,23 +1376,28 @@
         }
         .player-info {
             position: absolute;
-            top: 2rem;
-            left: 2rem;
+            top: 3.5rem;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--glass);
             backdrop-filter: blur(20px);
-            padding: 1rem 1.5rem;
-            border-radius: 15px;
-            border: 1px solid var(--glass-border);
+            padding: 2.2rem 3.2rem;
+            border-radius: 22px;
+            border: 2.5px solid var(--glass-border);
             z-index: 3001;
+            font-size: 2.1rem;
+            min-width: 320px;
+            max-width: 90vw;
+            box-shadow: 0 8px 40px #000a;
         }
         .player-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-size: 2.1rem;
+            font-weight: 900;
+            margin-bottom: 0.7rem;
         }
         .player-category {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
         }
         .player-controls {
             position: absolute;
@@ -2286,6 +2301,39 @@
           box-shadow: none !important;
           display: block;
         }
+        .welcome-card {
+            max-width: 480px;
+            min-width: 260px;
+            padding: 1.2rem 1.5rem 1.2rem 1.5rem;
+            min-height: 180px;
+        }
+        .stat-card {
+            min-width: 140px;
+            max-width: 200px;
+            padding: 2rem 1.5rem 1.5rem 1.5rem;
+        }
+        .stat-icon {
+            font-size: 2.2rem;
+        }
+        .stat-value {
+            font-size: 1.7rem;
+        }
+        .stat-label {
+            font-size: 1.1rem;
+        }
+        .user-avatar[disabled], .user-avatar.disabled {
+            pointer-events: none !important;
+            opacity: 0.5 !important;
+            filter: grayscale(0.7);
+        }
+        .action-btn#searchBtn {
+            margin: 0 0.7rem !important;
+        }
+        .user-avatar[disabled], .user-avatar.disabled, #loginBtn.disabled {
+            pointer-events: none !important;
+            opacity: 0.5 !important;
+            filter: grayscale(0.7);
+        }
     </style>
 </head>
 <body>
@@ -2293,9 +2341,30 @@
     <div class="page-loader" id="pageLoader">
         <div class="loader-content">
             <div class="loader-logo">
-                <i class="fas fa-tv"></i>
+                <svg width="60" height="60" viewBox="0 0 213 263" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_879_4834)">
+<path d="M43.8515 234.156V240.201H32.6597V261.04H22.9324V240.201H11.793V234.156H43.8515ZM80.4307 234.156L68.2453 261.04H57.0012L45.1296 234.156H55.38L58.7794 241.966C60.697 246.347 62.0218 250.402 62.754 254.131C63.5559 250.377 64.8982 246.334 66.7809 242.004L70.1803 234.156H80.4307ZM126.588 234.156V261.04H116.808V249.926H104.1V261.04H94.3201V234.156H104.1V243.881H116.808V234.156H126.588ZM165.971 234.156V250.151C165.971 253.731 164.942 256.409 162.885 258.186C160.166 260.539 155.773 261.716 149.706 261.716C143.256 261.716 138.671 260.389 135.952 257.736C134.243 256.059 133.389 253.506 133.389 250.076V234.156H143.169V250.602C143.169 252.479 143.692 253.843 144.738 254.695C145.818 255.521 147.544 255.934 149.915 255.934C152.112 255.934 153.715 255.521 154.727 254.695C155.738 253.843 156.243 252.479 156.243 250.602V234.156H165.971ZM172.843 234.156H190.833C194.494 234.156 197.266 234.494 199.148 235.17C202.356 236.321 203.96 238.236 203.96 240.915C203.96 243.343 202.321 245.158 199.044 246.359C200.508 246.735 201.589 247.123 202.286 247.523C204.587 248.775 205.738 250.602 205.738 253.005C205.738 255.984 204.064 258.199 200.717 259.651C198.591 260.577 195.679 261.04 191.984 261.04H172.843V234.156ZM182.622 239.525V244.745H189.578C192.82 244.745 194.442 243.881 194.442 242.154C194.442 240.402 192.733 239.525 189.316 239.525H182.622ZM182.622 249.325V255.521H190.31C194.006 255.521 195.854 254.494 195.854 252.442C195.854 250.364 193.936 249.325 190.101 249.325H182.622Z" fill="#5E5E5E"/>
+</g>
+<g clip-path="url(#clip1_879_4834)">
+<path d="M40.0976 231.652V237.697H28.9058V258.536H19.1785V237.697H8.03906V231.652H40.0976ZM76.6768 231.652L64.4914 258.536H53.2473L41.3757 231.652H51.6261L55.0255 239.462C56.9431 243.843 58.2679 247.898 59.0001 251.627C59.802 247.873 61.1443 243.83 63.027 239.5L66.4264 231.652H76.6768ZM122.834 231.652V258.536H113.054V247.422H100.346V258.536H90.5662V231.652H100.346V241.377H113.054V231.652H122.834ZM162.217 231.652V247.647C162.217 251.227 161.188 253.905 159.131 255.683C156.412 258.035 152.019 259.212 145.952 259.212C139.502 259.212 134.917 257.885 132.198 255.232C130.489 253.555 129.635 251.002 129.635 247.572V231.652H139.415V248.098C139.415 249.975 139.938 251.34 140.984 252.191C142.065 253.017 143.79 253.43 146.161 253.43C148.358 253.43 149.962 253.017 150.973 252.191C151.984 251.34 152.489 249.975 152.489 248.098V231.652H162.217ZM169.089 231.652H187.079C190.74 231.652 193.512 231.99 195.394 232.666C198.602 233.818 200.206 235.732 200.206 238.411C200.206 240.839 198.567 242.654 195.29 243.855C196.754 244.231 197.835 244.619 198.532 245.019C200.833 246.271 201.984 248.098 201.984 250.501C201.984 253.48 200.31 255.695 196.963 257.147C194.837 258.073 191.925 258.536 188.23 258.536H169.089V231.652ZM178.868 237.022V242.241H185.824C189.066 242.241 190.688 241.377 190.688 239.65C190.688 237.898 188.979 237.022 185.562 237.022H178.868ZM178.868 246.821V253.017H186.556C190.252 253.017 192.1 251.99 192.1 249.938C192.1 247.86 190.182 246.821 186.347 246.821H178.868Z" fill="#FF6500"/>
+</g>
+<path d="M208.5 105.5C208.5 161.241 162.873 206.5 106.5 206.5C50.1268 206.5 4.5 161.241 4.5 105.5C4.5 49.7592 50.1268 4.5 106.5 4.5C162.873 4.5 208.5 49.7592 208.5 105.5Z" stroke="#FF6500" stroke-width="9"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M178 92.5C178 136.407 141.959 172 97.5 172C53.0411 172 17 136.407 17 92.5C17 48.5934 53.0411 13 97.5 13C141.959 13 178 48.5934 178 92.5ZM129 59.5C129 67.5081 122.508 74 114.5 74C106.492 74 100 67.5081 100 59.5C100 51.4919 106.492 45 114.5 45C122.508 45 129 51.4919 129 59.5ZM70.5 81C78.5081 81 85 74.5081 85 66.5C85 58.4919 78.5081 52 70.5 52C62.4919 52 56 58.4919 56 66.5C56 74.5081 62.4919 81 70.5 81ZM78 110.5C78 118.508 71.5081 125 63.5 125C55.4919 125 49 118.508 49 110.5C49 102.492 55.4919 96 63.5 96C71.5081 96 78 102.492 78 110.5ZM103.5 145C111.508 145 118 138.508 118 130.5C118 122.492 111.508 116 103.5 116C95.4919 116 89 122.492 89 130.5C89 138.508 95.4919 145 103.5 145ZM149 98.5C149 106.508 142.508 113 134.5 113C126.492 113 120 106.508 120 98.5C120 90.4919 126.492 84 134.5 84C142.508 84 149 90.4919 149 98.5ZM97.5 97C99.9853 97 102 94.9853 102 92.5C102 90.0147 99.9853 88 97.5 88C95.0147 88 93 90.0147 93 92.5C93 94.9853 95.0147 97 97.5 97Z" fill="url(#paint0_radial_879_4834)"/>
+<defs>
+<radialGradient id="paint0_radial_879_4834" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(97.5 92.5) rotate(90) scale(79.5 80.5)">
+<stop stop-color="#EC8305"/>
+<stop offset="1" stop-color="#FF6500"/>
+</radialGradient>
+<clipPath id="clip0_879_4834">
+<rect width="195.245" height="28.7862" fill="white" transform="translate(10.7539 233.504)"/>
+</clipPath>
+<clipPath id="clip1_879_4834">
+<rect width="195.245" height="28.7862" fill="white" transform="translate(7 231)"/>
+</clipPath>
+</defs>
+</svg>
             </div>
-            <div class="loader-text">TvNa تيڤي نا</div>
+            <div class="loader-text">TVHUB</div>
             <div class="loader-spinner"></div>
         </div>
     </div>
@@ -2314,10 +2383,7 @@
     <!-- Header -->
     <header id="header">
         <div class="logo" id="homeBtn">
-            <div class="logo-icon">
-                <i class="fas fa-tv"></i>
-            </div>
-            <h1 class="logo-text">TvNa تيڤي نا</h1>
+            <h1 class="logo-text">TVHUB</h1>
         </div>
         
         <nav class="nav-links">
@@ -2373,8 +2439,8 @@
         <section id="homeTab" class="tab-content active">
             <div class="hero">
                 <div class="welcome-card fade-in">
-                    <h2 class="welcome-title" id="welcomeTitle">مرحباً بك في TvNa</h2>
-                    <p class="welcome-subtitle" id="welcomeSubtitle">استمتع بأفضل تجربة مشاهدة مع القنوات المحلية والعالمية</p>
+                    <h2 class="welcome-title" id="welcomeTitle">Welcome to TVHUB</h2>
+                    <p class="welcome-subtitle" id="welcomeSubtitle">استمتع بأفضل تجربة مشاهدة للقنوات المحلية والعالمية</p>
                     
                     <div class="stats-grid">
                         <div class="stat-card slide-in-left">
@@ -2395,10 +2461,6 @@
                     </div>
 
                     <div class="quick-actions">
-                        <div class="quick-action-btn premium" id="upgradeBtn">
-                            <i class="fas fa-crown"></i>
-                            <span>ترقية للمميز</span>
-                        </div>
                         <div class="quick-action-btn" data-tab="channels">
                             <i class="fas fa-play"></i>
                             <span>تصفح القنوات</span>
@@ -2417,7 +2479,7 @@
                         <div class="section-icon">
                             <i class="fas fa-bullhorn"></i>
                         </div>
-                        <h2 class="section-title">إعلانات TvNa التجارية</h2>
+                        <h2 class="section-title">TVHUB</h2>
                     </div>
                     <div class="section-controls">
                         <div class="live-badge">مباشر</div>
@@ -2489,8 +2551,8 @@
                         <i class="fas fa-signal"></i>
                         <select class="filter-select" id="qualityFilter">
                             <option value="">جميع الجودات</option>
-                            <option value="HD">عالي الوضوح HD</option>
-                            <option value="FHD">فائق الوضوح FHD</option>
+                            <option value="HD">HD</option>
+                            <option value="FHD"> FHD</option>
                             <option value="4K">دقة 4K</option>
                         </select>
                     </div>
@@ -2558,7 +2620,7 @@
                         <div class="section-icon">
                             <i class="fas fa-newspaper"></i>
                         </div>
-                        <h2 class="section-title">آخر الأخبار العربية الموثوقة</h2>
+                        <h2 class="section-title">آخر الأخبار العربية</h2>
                     </div>
                     <div class="section-controls">
                         <div class="live-badge">مباشر</div>
@@ -2604,10 +2666,6 @@
 
     <!-- Video Player -->
     <div class="video-player" id="videoPlayer">
-        <div class="player-info">
-            <div class="player-title" id="playerTitle">اسم القناة</div>
-            <div class="player-category" id="playerCategory">التصنيف</div>
-        </div>
         
         <video id="player" playsinline controls data-plyr-config='{"settings":["quality","speed","loop"],"speed":{"selected":1,"options":[0.5,1,1.5,2]},"quality":{"default":720,"options":[360,480,720,1080]}}'></video>
         
@@ -2628,7 +2686,7 @@
     <footer>
         <div class="footer-grid">
             <div class="footer-col">
-                <h3>TvNa تيڤي نا</h3>
+                <h3>TVHUB</h3>
                 <p>منصة تلفزيونية شاملة تقدم أفضل القنوات المحلية والعالمية، والأخبار الرياضية، والبرامج الحصرية بجودة عالية وتجربة مستخدم متميزة.</p>
                 <div class="social-links">
             
@@ -2644,7 +2702,6 @@
                     <li><a href="#" data-tab="categories"><i class="fas fa-arrow-left"></i> التصنيفات</a></li>
                     <li><a href="#" data-tab="favorites"><i class="fas fa-arrow-left"></i> المفضلة</a></li>
                     <li><a href="#" data-tab="news"><i class="fas fa-arrow-left"></i> الأخبار</a></li>
-                    <li><a href="#" id="premiumLink"><i class="fas fa-arrow-left"></i> العضوية المميزة</a></li>
                 </ul>
             </div>
             
@@ -2673,7 +2730,7 @@
         </div>
         
         <div class="copyright">
-            © 2025 TvNa تيڤي نا. جميع الحقوق محفوظة. Ameer_7elwas
+            © 2025 TVHUB. All rights reserved. Ameer_7elwas
             <br>
             <small>  </small>
         </div>
@@ -2857,7 +2914,6 @@
                     this.populateFilters();
                     
                     this.isLoading = false;
-                    this.showToast('أهلاً بعودتك من جديد', 'success');
                     
                 } catch (error) {
                     console.error('Error loading data:', error);
@@ -3105,54 +3161,22 @@
                 return null;
             }
 
-            // Favorites management with database
+            // Favorites management for all users (no login required)
             async toggleFavorite(channel) {
-                if (!this.currentUser) {
-                    this.showLoginModal();
-                    return;
-                }
-                
                 const index = this.favorites.findIndex(f => f.id === channel.id);
-                
                 try {
                     if (index === -1) {
                         // Add to favorites
                         this.favorites.push(channel);
-                        
-                        // Save to database
-                        try {
-                            await this.supabaseRequest('favorites', {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    user_id: this.currentUser.id,
-                                    channel_id: channel.id
-                                })
-                            });
-                        } catch (error) {
-                            console.error('Error saving favorite to database:', error);
-                        }
-                        
                         this.showToast(`تم إضافة ${channel.nameAr} إلى المفضلة`, 'success');
                     } else {
                         // Remove from favorites
                         this.favorites.splice(index, 1);
-                        
-                        // Remove from database
-                        try {
-                            await this.supabaseRequest(`favorites?user_id=eq.${this.currentUser.id}&channel_id=eq.${channel.id}`, {
-                                method: 'DELETE'
-                            });
-                        } catch (error) {
-                            console.error('Error removing favorite from database:', error);
-                        }
-                        
                         this.showToast(`تم إزالة ${channel.nameAr} من المفضلة`, 'warning');
                     }
-                    
                     this.saveFavoritesToStorage();
                     this.updateStats();
                     this.updateFavoriteButtons();
-                    
                     if (this.currentTab === 'favorites') {
                         this.renderFavorites();
                     }
@@ -3162,22 +3186,10 @@
                 }
             }
 
+            // لا تحمل المفضلة من قاعدة البيانات، فقط من localStorage
             async loadUserFavorites() {
-                if (!this.currentUser) return;
-                
-                try {
-                    const favorites = await this.supabaseRequest(`favorites?select=channel_id&eq.user_id.${this.currentUser.id}`);
-                    
-                    if (favorites && favorites.length > 0) {
-                        // Get favorite channels
-                        const favoriteChannelIds = favorites.map(f => f.channel_id);
-                        this.favorites = this.channels.filter(c => favoriteChannelIds.includes(c.id));
-                        this.saveFavoritesToStorage();
-                        this.updateStats();
-                    }
-                } catch (error) {
-                    console.error('Error loading user favorites:', error);
-                }
+                this.favorites = this.loadFavoritesFromStorage();
+                this.updateStats();
             }
             
             setupEventListeners() {
@@ -3276,11 +3288,6 @@
                     this.clearAllFavorites();
                 });
                 
-                // Premium upgrade
-                document.getElementById('upgradeBtn').addEventListener('click', () => {
-                    this.showPremiumModal();
-                });
-                
                 // Modal outside click
                 this.elements.loginModal.addEventListener('click', (e) => {
                     if (e.target === this.elements.loginModal) {
@@ -3324,7 +3331,7 @@
                   if (this.notificationElements.notificationsDropdown.style.display === 'block') this.loadAndShowNotifications();
                   else this.updateNotificationBadge();
                 }, 60000);
-                // تحديث الشارة بعد 2 ثانية من التحميل
+             
                 setTimeout(() => this.updateNotificationBadge(), 2000);
             }
             
@@ -3342,70 +3349,7 @@
 
             loadMockChannels() {
                 this.channels = [
-                    {
-                        id: '1',
-                        name: 'Al Jazeera',
-                        nameAr: 'قناة الجزيرة',
-                        description: 'قناة إخبارية عالمية',
-                        descriptionAr: 'قناة إخبارية عالمية تقدم آخر الأخبار والتقارير',
-                        category: 'News',
-                        imageUrl: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=400&h=300&fit=crop',
-                        url: 'https://live-hls-web-aje.getaj.net/AJE/01.m3u8',
-                        isPremium: false,
-                        isLive: true,
-                        quality: 'HD',
-                        viewersCount: 15420,
-                        rating: 4.8,
-                        membershipType: 'free'
-                    },
-                    {
-                        id: '2',
-                        name: 'beIN Sports',
-                        nameAr: 'بين سبورت',
-                        description: 'قناة رياضية عالمية',
-                        descriptionAr: 'قناة رياضية تقدم أهم المباريات والبطولات العالمية',
-                        category: 'Sports',
-                        imageUrl: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400&h=300&fit=crop',
-                        url: 'https://example.com/beinsports1.m3u8',
-                        isPremium: true,
-                        isLive: true,
-                        quality: 'FHD',
-                        viewersCount: 25600,
-                        rating: 4.9,
-                        membershipType: 'premium'
-                    },
-                    {
-                        id: '3',
-                        name: 'MBC Egypt',
-                        nameAr: 'MBC مصر',
-                        description: 'قناة ترفيهية مصرية',
-                        descriptionAr: 'قناة ترفيهية تقدم أفضل البرامج والمسلسلات المصرية',
-                        category: 'Entertainment',
-                        imageUrl: 'https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=400&h=300&fit=crop',
-                        url: 'https://shls-mbcmasr-prod-dub.shahid.net/out/v1/d5036cabf11e45bf9d0db410ca135c18/index.m3u8',
-                        isPremium: false,
-                        isLive: true,
-                        quality: 'HD',
-                        viewersCount: 8900,
-                        rating: 4.5,
-                        membershipType: 'free'
-                    },
-                    {
-                        id: '4',
-                        name: 'National Geographic',
-                        nameAr: 'ناشيونال جيوغرافيك',
-                        description: 'قناة وثائقية',
-                        descriptionAr: 'قناة وثائقية تقدم أفضل البرامج العلمية والطبيعية',
-                        category: 'Documentary',
-                        imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
-                        url: 'https://example.com/natgeo.m3u8',
-                        isPremium: false,
-                        isLive: true,
-                        quality: 'HD',
-                        viewersCount: 5400,
-                        rating: 4.6,
-                        membershipType: 'free'
-                    },
+                 
                     {
                         id: '5',
                         name: 'Spacetoon',
@@ -3414,7 +3358,7 @@
                         descriptionAr: 'قناة مخصصة لبرامج وأفلام الأطفال',
                         category: 'Kids',
                         imageUrl: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=300&fit=crop',
-                        url: 'https://example.com/spacetoon.m3u8',
+                        url: 'https://shd-gcp-live.edgenextcdn.net/live/bitmovin-spacetoon/d8382fb9ab4b2307058f12c7ea90db54/manifest/video/576p1200kbps/video.m3u8',
                         isPremium: false,
                         isLive: true,
                         quality: 'HD',
@@ -3438,14 +3382,7 @@
 
             loadMockAds() {
                 this.ads = [
-                    {
-                        id: '1',
-                        title: 'اشتراك مميز في TvNa',
-                        description: 'احصل على وصول كامل لجميع القنوات المميزة مع جودة 4K',
-                        imageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&h=400&fit=crop',
-                        link: '#premium',
-                        isActive: true
-                    },
+                    
                     {
                         id: '2',
                         title: 'أحدث الأخبار الرياضية',
@@ -3531,10 +3468,10 @@
                         this.hideLoginModal();
                         this.showToast(`مرحباً ${this.currentUser.username}!`, 'success');
                         
-                        // Load user favorites
+                        
                         await this.loadUserFavorites();
                         
-                        // Reset form
+                        
                         document.getElementById('email').value = '';
                         document.getElementById('password').value = '';
                     } else {
@@ -3561,7 +3498,7 @@
                     this.elements.loginBtn.classList.add('logged-in');
                     this.elements.loginBtn.title = `مرحباً ${this.currentUser.username}`;
                     
-                    // Add logout functionality
+                   
                     this.elements.loginBtn.onclick = () => this.showUserMenu();
                 }
             }
@@ -3571,7 +3508,6 @@
                     this.showLoginModal();
                     return;
                 }
-                // نافذة معلومات المستخدم
                 const menu = document.createElement('div');
                 menu.className = 'user-menu glass-bg rounded-xl';
                 menu.style.cssText = `
@@ -3614,11 +3550,10 @@
                 this.elements.loginBtn.innerHTML = '<i class="fas fa-user"></i>';
                 this.elements.loginBtn.classList.remove('logged-in');
                 this.elements.loginBtn.onclick = () => this.showLoginModal();
-                document.getElementById('welcomeTitle').textContent = 'مرحباً بك في TvNa';
-                document.getElementById('welcomeSubtitle').textContent = 'استمتع بأفضل تجربة مشاهدة مع القنوات المحلية والعالمية';
+                document.getElementById('welcomeTitle').textContent = 'مرحباً بك في TVHUB';
+                document.getElementById('welcomeSubtitle').textContent = 'استمتع بأفضل تجربة مشاهدة للقنوات المحلية والعالمية';
                 this.showToast('تم تسجيل الخروج بنجاح', 'success');
                 
-                // Clear favorites if user logged out
                 this.favorites = [];
                 this.saveFavoritesToStorage();
                 this.updateStats();
@@ -3744,17 +3679,17 @@
             }
             
             showTab(tabName) {
-                // Hide all tabs
+                
                 this.elements.tabContents.forEach(tab => {
                     tab.classList.remove('active');
                 });
                 
-                // Remove active class from all nav links
+               
                 this.elements.navLinks.forEach(link => {
                     link.classList.remove('active');
                 });
                 
-                // Show selected tab
+                
                 const targetTab = document.getElementById(`${tabName}Tab`);
                 if (targetTab) {
                     targetTab.classList.add('active');
@@ -3767,7 +3702,7 @@
                     activeLink.classList.add('active');
                 }
                 
-                // Load data for specific tabs
+                
                 switch (tabName) {
                     case 'categories':
                         this.renderCategories();
@@ -3783,14 +3718,12 @@
                         break;
                 }
                 
-                // Scroll to top
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
             
             updateStats() {
                 document.getElementById('channelsCount').textContent = this.channels.length;
                 document.getElementById('favoritesCount').textContent = this.favorites.length;
-                // Removed usersCount update to prevent error
             }
             
             renderAds() {
@@ -3817,7 +3750,6 @@
                     container.appendChild(slide);
                 });
                 
-                // Add carousel indicators
                 const indicators = document.createElement('div');
                 indicators.className = 'carousel-indicators';
                 this.ads.forEach((_, index) => {
@@ -3828,7 +3760,6 @@
                 });
                 container.appendChild(indicators);
                 
-                // Add navigation arrows
                 const prevBtn = document.createElement('div');
                 prevBtn.className = 'carousel-nav prev';
                 prevBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
@@ -3842,7 +3773,6 @@
                 container.appendChild(prevBtn);
                 container.appendChild(nextBtn);
                 
-                // Auto rotate
                 this.startCarouselRotation();
             }
             
@@ -3971,7 +3901,7 @@
                     </div>
                 `;
                 
-                // Add event listeners
+                
                 card.querySelectorAll('.channel-action-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -3981,7 +3911,6 @@
                     });
                 });
                 
-                // Add card click to play
                 card.addEventListener('click', () => {
                     this.handleChannelAction(channel.id, 'play');
                 });
@@ -4019,7 +3948,6 @@
                         url: window.location.href
                     });
                 } else {
-                    // Fallback to clipboard
                     const shareText = `${channel.nameAr} - ${channel.descriptionAr}\n${window.location.href}`;
                     navigator.clipboard.writeText(shareText).then(() => {
                         this.showToast('تم نسخ رابط القناة', 'success');
@@ -4028,48 +3956,16 @@
             }
             
             playChannel(channel) {
-                console.log('Attempting to play channel:', channel);
-                console.log('Current user:', this.currentUser);
-                
-                // Check if user is logged in
-                if (!this.currentUser) {
-                    this.showLoginModal();
-                    this.showToast('يجب تسجيل الدخول أولاً', 'warning');
-                    return;
-                }
-
-                // Check if user account is active
-                if (!this.currentUser.isActive) {
-                    this.showToast('حسابك غير نشط، تواصل مع الإدارة', 'error');
-                    return;
-                }
-
-                // Check user permissions for premium content
-                if (channel.isPremium || channel.membershipType === 'premium') {
-                    if (!this.currentUser.isPremium) {
-                        this.showPremiumModal();
-                        return;
-                    }
-                }
-                
-                // Check if user has access to this specific channel (for VIP users)
-                if (this.currentUser.membershipType === 'vip' && 
-                    this.currentUser.allowedChannels.length > 0 && 
-                    !this.currentUser.allowedChannels.includes(channel.id)) {
-                    this.showToast('ليس لديك صلاحية لمشاهدة هذه القناة', 'warning');
-                    return;
-                }
-                
                 this.showVideoPlayer(channel);
             }
             
             showVideoPlayer(channel) {
                 this.elements.videoPlayer.classList.add('show');
                 document.body.style.overflow = 'hidden';
-                const playerInfo = this.elements.videoPlayer.querySelector('.player-info');
-                if(playerInfo) playerInfo.style.display = 'block';
-                document.getElementById('playerTitle').textContent = channel.nameAr;
-                document.getElementById('playerCategory').textContent = this.getCategoryNameAr(channel.category);
+                // const playerInfo = this.elements.videoPlayer.querySelector('.player-info');
+                // if(playerInfo) playerInfo.style.display = 'block';
+                // document.getElementById('playerTitle').textContent = channel.nameAr;
+                // document.getElementById('playerCategory').textContent = this.getCategoryNameAr(channel.category);
                 // Initialize video player
                 try {
                     if (Hls.isSupported()) {
@@ -4078,15 +3974,19 @@
                         hls.attachMedia(this.elements.playerElement);
                         hls.on(Hls.Events.MANIFEST_PARSED, () => {
                             this.elements.playerElement.play();
+                            // document.getElementById('playerTitle').style.display = 'none';
+                            // document.getElementById('playerCategory').style.display = 'none';
                         });
-                        // إخفاء اسم القناة بعد التشغيل
+                        
                     } else if (this.elements.playerElement.canPlayType('application/vnd.apple.mpegurl')) {
                         this.elements.playerElement.src = channel.url;
                         this.elements.playerElement.addEventListener('loadedmetadata', () => {
                             this.elements.playerElement.play();
+                            // document.getElementById('playerTitle').style.display = 'none';
+                            // document.getElementById('playerCategory').style.display = 'none';
                         });
                     } else {
-                        // Fallback for demo
+                        
                         this.showToast('تعذر تشغيل القناة - هذا عرض تجريبي', 'error');
                         this.closeVideoPlayer();
                     }
@@ -4176,11 +4076,11 @@
                 this.currentFilters.category = category;
                 this.showTab('channels');
                 
-                // Update filter dropdown
+                
                 document.getElementById('categoryFilter').value = category;
                 this.filterChannels();
                 
-                // Scroll to channels section
+                
                 setTimeout(() => {
                     document.getElementById('allChannels').scrollIntoView({ 
                         behavior: 'smooth',
@@ -4217,10 +4117,9 @@
                 const categoryFilter = document.getElementById('categoryFilter');
                 if (!categoryFilter) return;
                 
-                // Clear existing options except the first one
+                
                 categoryFilter.innerHTML = '<option value="">جميع التصنيفات</option>';
                 
-                // Add category options
                 this.categories.forEach(category => {
                     const option = document.createElement('option');
                     option.value = category.name;
@@ -4232,17 +4131,17 @@
             filterChannels() {
                 let filtered = [...this.channels];
                 
-                // Filter by category
+                
                 if (this.currentFilters.category) {
                     filtered = filtered.filter(c => c.category === this.currentFilters.category);
                 }
                 
-                // Filter by quality
+                
                 if (this.currentFilters.quality) {
                     filtered = filtered.filter(c => c.quality === this.currentFilters.quality);
                 }
                 
-                // Filter by search
+               
                 if (this.currentFilters.search) {
                     filtered = filtered.filter(c => 
                         c.nameAr.toLowerCase().includes(this.currentFilters.search) ||
@@ -4251,7 +4150,6 @@
                     );
                 }
                 
-                // Sort channels
                 this.sortChannelsArray(filtered);
                 
                 // Update UI
@@ -4463,20 +4361,20 @@
                 
                 this.elements.toastContainer.appendChild(toast);
                 
-                // Show toast
+               
                 setTimeout(() => toast.classList.add('show'), 100);
                 
-                // Add close functionality
+                
                 toast.querySelector('.toast-close').addEventListener('click', () => {
                     this.removeToast(toast);
                 });
                 
-                // Auto remove
+                
                 setTimeout(() => {
                     this.removeToast(toast);
                 }, duration);
                 
-                // تشغيل صوت الإشعار مع كل توست
+                
                 try {
                   const audio = document.getElementById('notifSound');
                   if(audio){ audio.currentTime = 0; audio.play().catch(()=>{}); }
@@ -4583,7 +4481,7 @@
                 }).join('');
               this.notificationElements.badge.textContent = unreadCount > 0 ? unreadCount : '';
               this.notificationElements.badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-              // ربط حدث النقر على كل إشعار
+              
               this.notificationElements.notificationsList.querySelectorAll('.notification-item').forEach(item => {
                 item.onclick = () => {
                   this.markNotificationRead(item.dataset.id);
@@ -4612,18 +4510,18 @@
               const unreadCount = unread.length;
               this.notificationElements.badge.textContent = unreadCount > 0 ? unreadCount : '';
               this.notificationElements.badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-              // إشعار منبثق وصوت عند وجود إشعار جديد لم يتم تنبيهه
+             
               if (unread.length > 0) {
                 const newOnes = unread.filter(n => !this.lastNotifiedIds.includes(n.id));
                 if (newOnes.length > 0) {
-                  // أظهر toast لكل إشعار جديد
+                  
                   newOnes.forEach(n => {
                     this.showToast(`<b>${n.title_ar || n.title}</b><br>${n.message_ar || n.message}`, 'info', 4000);
                   });
-                  // شغل الصوت
+                  
                   const audio = document.getElementById('notifSound');
                   if (audio) { audio.currentTime = 0; audio.play(); }
-                  // سجل آخر إشعارات تم تنبيهها
+                 
                   this.lastNotifiedIds = [...this.lastNotifiedIds, ...newOnes.map(n => n.id)].slice(-30);
                 }
               }
@@ -4657,7 +4555,6 @@
             }
         };
 
-        // مصادر الأخبار العربية الموثوقة
         const newsSources = {
           all: [
             'https://www.aljazeera.net/aljazeera/rss',
@@ -4765,21 +4662,6 @@
           }
         });
 
-        // تفعيل الصوت بعد أول تفاعل
-        (function enableNotifSoundOnUserGesture(){
-          let audio = document.getElementById('notifSound');
-          if (!audio) return;
-          function unlock(){
-            audio.play().catch(()=>{});
-            audio.pause();
-            audio.currentTime = 0;
-            window.removeEventListener('click', unlock);
-            window.removeEventListener('touchstart', unlock);
-          }
-          window.addEventListener('click', unlock);
-          window.addEventListener('touchstart', unlock);
-        })();
-
         // ... داخل updateNotificationBadge بعد showToast ...
         if ("Notification" in window) {
           if (Notification.permission === "granted") {
@@ -4787,7 +4669,7 @@
               new Notification(n.title_ar || n.title, {
                 body: n.message_ar || n.message,
                 icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827349.png',
-                silent: false // (لن يصدر صوت فعلي لكن بعض الأنظمة تعرض اهتزاز/وميض)
+                silent: false 
               });
             });
           } else if (Notification.permission !== "denied") {
@@ -4824,13 +4706,9 @@
             };
           }
         });
+
+        this.elements.loginBtn.classList.add('disabled');
+        this.elements.loginBtn.onclick = null;
     </script>
-    <audio id="notifSound" src="https://cdn.pixabay.com/audio/2022/10/16/audio_12b5fae3b6.mp3" preload="auto"></audio>
-    <div style="position:fixed;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:7px 18px;border-radius:12px;font-size:1rem;z-index:99999;"></div>
-    <div style="text-align:center;margin:18px 0;">
-      <button id="testNotifSoundBtn" style="background:#ff9e00;color:#fff;font-weight:900;font-size:1.1rem;padding:12px 32px;border:none;border-radius:14px;box-shadow:0 2px 12px #0003;cursor:pointer;">اختبر صوت الإشعار 🔊</button>
-    </div>
-    <div style="text-align:center;color:#ff9e00;font-size:1rem;margin-bottom:18px;">.</div>
-    <div id="notifSoundMsg" style="text-align:center;color:#e74c3c;font-size:1.1rem;margin-bottom:10px;display:none;"></div>
 </body>
 </html>
