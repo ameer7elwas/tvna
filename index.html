@@ -956,7 +956,7 @@
             margin-bottom: 0;
         }
         .channel-badge.live { background: linear-gradient(45deg, #f72585, #b5179e); }
-        .channel-badge.hd, .channel-badge.fhd, .channel-badge['4k'] { background: linear-gradient(45deg, #4cc9f0, #06d6a0); }
+        .channel-badge.hd, .channel-badge.fhd, .channel-badge.k4 { background: linear-gradient(45deg, #4cc9f0, #06d6a0); }
         .channel-badge.premium { background: linear-gradient(135deg, #ff9e00, #ff6b35); }
         .channel-content {
             flex: 1;
@@ -1461,31 +1461,47 @@
         }
         .player-controls {
             position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 1.5rem;
+            left: 1.5rem;
+            right: auto;
+            bottom: auto;
             display: flex;
-            justify-content: center;
-            gap: 1.5rem;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-start;
+            gap: 0.7rem;
             z-index: 3001;
         }
         .player-btn {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
             background: var(--glass);
             backdrop-filter: blur(20px);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid var(--glass-border);
+            box-shadow: 0 2px 8px #0002;
         }
         .player-btn:hover {
             background: var(--primary);
             transform: scale(1.1);
+        }
+        @media (max-width: 600px) {
+          .player-controls {
+            top: 0.7rem;
+            left: 0.7rem;
+            gap: 0.3rem;
+          }
+          .player-btn {
+            width: 38px;
+            height: 38px;
+            font-size: 1rem;
+          }
         }
         .toast-container {
             position: fixed;
@@ -2424,6 +2440,8 @@
           margin-bottom: 0.5rem;
         }
     </style>
+    <script>
+    </script>
 </head>
 <body>
     <!-- Page Loader -->
@@ -2748,7 +2766,6 @@
         </div>
     </div>
 
-    <!-- Video Player -->
     <div class="video-player" id="videoPlayer">
         
         <video id="player" playsinline controls data-plyr-config='{"settings":["quality","speed","loop"],"speed":{"selected":1,"options":[0.5,1,1.5,2]},"quality":{"default":720,"options":[360,480,720,1080]}}'></video>
@@ -2819,7 +2836,6 @@
         </div>
     </footer>
 
-    <!-- قائمة الإشعارات المنسدلة -->
     <div class="notifications-dropdown" id="notificationsDropdown" style="display:none;position:absolute;top:60px;left:0;right:0;max-width:350px;margin:auto;z-index:2000;background:var(--glass);backdrop-filter:blur(18px);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);border:1px solid var(--glass-border);">
       <div style="padding:1rem 1.2rem 0.5rem;font-weight:900;font-size:1.1rem;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;">
         <span>الإشعارات</span>
@@ -2829,10 +2845,8 @@
     </div>
 
     <script>
-        // Enhanced TvNa JavaScript Application with Supabase Integration
         class TvNaApp {
             constructor() {
-                // Supabase configuration
                 this.SUPABASE_URL = 'https://vpvvjascwgivdjyyhzwp.supabase.co';
                 this.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwdnZqYXNjd2dpdmRqeXloendwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDYxMjYsImV4cCI6MjA2NTM4MjEyNn0.6AR2-MG4x9ugNTXe9jUqx-IwGEtj1m6MCYwQkTsSbUQ';
                 
@@ -3103,19 +3117,16 @@
                 return iconMap[categoryName] || 'fas fa-tv';
             }
 
-            // Enhanced User authentication with better compatibility
+           
             async authenticateUser(emailOrUsername, password) {
                 try {
                     console.log('Attempting authentication for:', emailOrUsername);
                     
-                    // First, try to find user by email or username using corrected query syntax
                     let users = null;
                     
                     if (emailOrUsername.includes('@')) {
-                        // Search by email
                         users = await this.supabaseRequest(`users?email=eq.${emailOrUsername}&select=*`);
                     } else {
-                        // Search by username
                         users = await this.supabaseRequest(`users?username=eq.${emailOrUsername}&select=*`);
                     }
                     
@@ -3125,13 +3136,11 @@
                         const user = users[0];
                         console.log('User found:', user);
                         
-                        // Check if user has password_hash
                         if (!user.password_hash) {
                             console.error('User has no password hash');
                             return null;
                         }
                         
-                        // Decode the stored password (base64 decoding)
                         let storedPassword;
                         try {
                             storedPassword = atob(user.password_hash);
@@ -3145,7 +3154,6 @@
                         if (password === storedPassword) {
                             console.log('Password matches! Logging in user.');
                             
-                            // Update last login
                             try {
                                 await this.supabaseRequest(`users?id=eq.${user.id}`, {
                                     method: 'PATCH',
@@ -3183,12 +3191,11 @@
                 } catch (error) {
                     console.error('Authentication error:', error);
                     console.log('Falling back to sample user authentication');
-                    // Try to authenticate with sample users for demo
                     return this.authenticateWithSampleUsers(emailOrUsername, password);
                 }
             }
 
-            // Fallback authentication with sample users
+           
             authenticateWithSampleUsers(emailOrUsername, password) {
                 console.log('Authenticating with sample users - input:', emailOrUsername, password);
                 
@@ -3243,16 +3250,16 @@
                 return null;
             }
 
-            // Favorites management for all users (no login required)
+           
             async toggleFavorite(channel) {
                 const index = this.favorites.findIndex(f => f.id === channel.id);
                 try {
                     if (index === -1) {
-                        // Add to favorites
+                       
                         this.favorites.push(channel);
                         this.showToast(`تم إضافة ${channel.nameAr} إلى المفضلة`, 'success');
                     } else {
-                        // Remove from favorites
+                        
                         this.favorites.splice(index, 1);
                         this.showToast(`تم إزالة ${channel.nameAr} من المفضلة`, 'warning');
                     }
@@ -3268,24 +3275,24 @@
                 }
             }
 
-            // لا تحمل المفضلة من قاعدة البيانات، فقط من localStorage
+            
             async loadUserFavorites() {
                 this.favorites = this.loadFavoritesFromStorage();
                 this.updateStats();
             }
             
             setupEventListeners() {
-                // Login modal events
+               
                 this.elements.loginBtn.addEventListener('click', () => this.showLoginModal());
                 this.elements.closeModal.addEventListener('click', () => this.hideLoginModal());
                 this.elements.submitLogin.addEventListener('click', () => this.handleLogin());
                 
-                // Video player events
+                
                 this.elements.closePlayer.addEventListener('click', () => this.closeVideoPlayer());
                 document.getElementById('playerFullscreen').addEventListener('click', () => this.toggleFullscreen());
                 document.getElementById('playerVolume').addEventListener('click', () => this.toggleMute());
                 
-                // Navigation events
+               
                 this.elements.homeBtn.addEventListener('click', () => this.showTab('home'));
                 this.elements.navLinks.forEach(link => {
                     link.addEventListener('click', () => {
@@ -3294,7 +3301,7 @@
                     });
                 });
                 
-                // Quick action buttons
+               
                 document.querySelectorAll('.quick-action-btn[data-tab]').forEach(btn => {
                     btn.addEventListener('click', () => {
                         const tab = btn.getAttribute('data-tab');
@@ -3302,7 +3309,7 @@
                     });
                 });
                 
-                // Search functionality
+               
                 this.elements.searchBtn.addEventListener('click', () => this.toggleSearch());
                 this.elements.searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
                 this.elements.searchInput.addEventListener('focus', () => this.showSearchResults());
@@ -3310,7 +3317,7 @@
                     setTimeout(() => this.hideSearchResults(), 200);
                 });
                 
-                // Filters and sorting
+                
                 document.getElementById('categoryFilter').addEventListener('change', (e) => {
                     this.currentFilters.category = e.target.value;
                     this.filterChannels();
@@ -3329,7 +3336,7 @@
                     });
                 });
                 
-                // View toggle
+                
                 document.querySelectorAll('.view-toggle-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
@@ -3338,7 +3345,7 @@
                     });
                 });
                 
-                // Header scroll effect
+                
                 window.addEventListener('scroll', () => {
                     if (window.scrollY > 100) {
                         this.elements.header.classList.add('scrolled');
@@ -3347,7 +3354,7 @@
                     }
                 });
                 
-                // Footer links
+                
                 document.querySelectorAll('.footer-links a[data-tab]').forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -3356,25 +3363,25 @@
                     });
                 });
                 
-                // Newsletter form
+                
                 document.getElementById('newsletterForm').addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.handleNewsletterSubscription(e);
                 });
                 
-                // Clear favorites
+                
                 document.getElementById('clearFavoritesBtn').addEventListener('click', () => {
                     this.clearAllFavorites();
                 });
                 
-                // Modal outside click
+                
                 this.elements.loginModal.addEventListener('click', (e) => {
                     if (e.target === this.elements.loginModal) {
                         this.hideLoginModal();
                     }
                 });
                 
-                // Keyboard shortcuts
+                
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         this.hideLoginModal();
@@ -3405,7 +3412,7 @@
                   this.markAllNotificationsRead(this.notifications.map(n => n.id));
                   this.renderNotifications(this.notifications);
                 });
-                // تحديث الشارة كل دقيقة
+                
                 setInterval(() => {
                   if (this.notificationElements.notificationsDropdown.style.display === 'block') this.loadAndShowNotifications();
                   else this.updateNotificationBadge();
@@ -3500,7 +3507,7 @@
             }
             
             animateElements() {
-                // Add animation classes to elements as they come into view
+               
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -3533,7 +3540,6 @@
                     return;
                 }
                 
-                // Show loading state
                 this.elements.submitLogin.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تسجيل الدخول...';
                 this.elements.submitLogin.disabled = true;
                 
@@ -4033,11 +4039,7 @@
             showVideoPlayer(channel) {
                 this.elements.videoPlayer.classList.add('show');
                 document.body.style.overflow = 'hidden';
-                // const playerInfo = this.elements.videoPlayer.querySelector('.player-info');
-                // if(playerInfo) playerInfo.style.display = 'block';
-                // document.getElementById('playerTitle').textContent = channel.nameAr;
-                // document.getElementById('playerCategory').textContent = this.getCategoryNameAr(channel.category);
-                // Initialize video player
+               
                 try {
                     if (Hls.isSupported()) {
                         const hls = new Hls();
@@ -4045,16 +4047,14 @@
                         hls.attachMedia(this.elements.playerElement);
                         hls.on(Hls.Events.MANIFEST_PARSED, () => {
                             this.elements.playerElement.play();
-                            // document.getElementById('playerTitle').style.display = 'none';
-                            // document.getElementById('playerCategory').style.display = 'none';
+                           
                         });
                         
                     } else if (this.elements.playerElement.canPlayType('application/vnd.apple.mpegurl')) {
                         this.elements.playerElement.src = channel.url;
                         this.elements.playerElement.addEventListener('loadedmetadata', () => {
                             this.elements.playerElement.play();
-                            // document.getElementById('playerTitle').style.display = 'none';
-                            // document.getElementById('playerCategory').style.display = 'none';
+                          
                         });
                     } else {
                         
@@ -4223,7 +4223,6 @@
                 
                 this.sortChannelsArray(filtered);
                 
-                // Update UI
                 this.renderChannelsInContainer(document.getElementById('allChannels'), filtered);
             }
             
@@ -4599,13 +4598,13 @@
             }
         }
         
-        // Initialize the application
+        
         let tvnaApp;
         document.addEventListener('DOMContentLoaded', () => {
             tvnaApp = new TvNaApp();
         });
         
-        // Global functions for inline event handlers
+        
         window.tvnaApp = {
             selectSearchResult: (id) => tvnaApp.selectSearchResult(id),
             showAllSearchResults: () => tvnaApp.showAllSearchResults(),
@@ -4686,7 +4685,7 @@
           ]
         };
 
-        // دالة جلب وتحويل RSS إلى JSON
+        
         async function fetchRSS(url) {
           try {
             const resp = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
@@ -4696,7 +4695,7 @@
           }
         }
 
-        // تحميل الأخبار حسب الفئة
+        
         async function loadNews(type = 'all') {
           const grid = document.getElementById('newsCardsGrid');
           grid.innerHTML = '<div style="text-align:center;padding:2rem;">جاري تحميل الأخبار...</div>';
@@ -4714,9 +4713,9 @@
               })));
             }
           }
-          // ترتيب حسب الأحدث
+          
           allNews.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate));
-          // تصفية الأخبار المكررة حسب العنوان أو الرابط
+          
           const uniqueNews = [];
           const seenTitles = new Set();
           const seenLinks = new Set();
@@ -4729,7 +4728,7 @@
               seenLinks.add(link);
             }
           }
-          // عرض الأخبار بعد التصفية (عدد أكبر)
+          
           grid.innerHTML = uniqueNews.slice(0, 40).map(news => `
             <div class="news-card" style="background:var(--glass);border-radius:16px;box-shadow:0 2px 12px rgba(67,97,238,0.08);overflow:hidden;display:flex;flex-direction:column;">
               ${news.image ? `<img src="${news.image}" alt="news" style="width:100%;height:160px;object-fit:cover;">` : ''}
@@ -4747,7 +4746,7 @@
           `).join('');
         }
 
-        // تفعيل الفلاتر
+       
         if(document.getElementById('newsCardsGrid')){
           let currentNewsType = 'all';
           function reloadNews() {
@@ -4762,7 +4761,7 @@
               reloadNews();
             };
           });
-          // تحديث تلقائي كل 3 دقائق
+          
           setInterval(reloadNews, 180000);
         }
 
@@ -4781,7 +4780,7 @@
           }
         });
 
-        // ... داخل updateNotificationBadge بعد showToast ...
+        
         if ("Notification" in window) {
           if (Notification.permission === "granted") {
             newOnes.forEach(n => {
@@ -4828,6 +4827,50 @@
 
         this.elements.loginBtn.classList.add('disabled');
         this.elements.loginBtn.onclick = null;
+    </script>
+    <script>
+    
+    window.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+    
+    window.addEventListener('keydown', function(e) {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C')) ||
+        (e.ctrlKey && e.key === 'U')
+      ) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var userBtn = document.getElementById('loginBtn');
+      if (!userBtn) return;
+      let pressTimer;
+      userBtn.addEventListener('mousedown', function(e) {
+        pressTimer = setTimeout(function() {
+          alert('developer : Ameer_7elwas');
+        }, 6000);
+      });
+      userBtn.addEventListener('mouseup', function(e) {
+        clearTimeout(pressTimer);
+      });
+      userBtn.addEventListener('mouseleave', function(e) {
+        clearTimeout(pressTimer);
+      });
+      userBtn.addEventListener('touchstart', function(e) {
+        pressTimer = setTimeout(function() {
+          alert('developer : Ameer_7elwas');
+        }, 6000);
+      });
+      userBtn.addEventListener('touchend', function(e) {
+        clearTimeout(pressTimer);
+      });
+    });
     </script>
 </body>
 </html>
