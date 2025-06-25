@@ -96,7 +96,7 @@
             background: var(--secondary);
         }
 
-        /* Loading Animation */
+        
         .page-loader {
             position: fixed;
             top: 0;
@@ -259,22 +259,13 @@
             white-space: nowrap;
         }
 
-        .nav-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
+        .nav-link::before, .nav-link:after {
+            border-bottom: none !important;
+            text-decoration: none !important;
+            box-shadow: none !important;
         }
 
-        .nav-link:hover::before {
-            left: 100%;
-        }
-
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover::before, .nav-link:hover, .nav-link.active {
             background: var(--premium);
             color: white;
             transform: translateY(-2px);
@@ -331,25 +322,13 @@
             overflow: hidden;
         }
 
-        .action-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            transition: all 0.3s ease;
-            border-radius: 50%;
+        .action-btn::before, .action-btn::after {
+            border-bottom: none !important;
+            text-decoration: none !important;
+            box-shadow: none !important;
         }
 
-        .action-btn:hover::before {
-            width: 100px;
-            height: 100px;
-        }
-
-        .action-btn:hover {
+        .action-btn:hover::before, .action-btn:hover {
             background: var(--primary);
             transform: translateY(-3px);
             box-shadow: var(--shadow-light);
@@ -369,6 +348,12 @@
             font-size: 1.2rem;
             transition: all 0.3s ease;
             position: relative;
+        }
+
+        .user-avatar::before, .user-avatar::after {
+            border-bottom: none !important;
+            text-decoration: none !important;
+            box-shadow: none !important;
         }
 
         .user-avatar:hover {
@@ -919,23 +904,97 @@
         }
 
         .channel-card {
-            min-width: 260px;
-            max-width: 320px;
-            height: 370px;
-            width: 100%;
-            background: var(--glass);
-            backdrop-filter: blur(18px);
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 4px 18px 0 rgba(67,97,238,0.10);
-            transition: all 0.28s cubic-bezier(.23,1.12,.72,1.01);
-            position: relative;
-            border: 2.5px solid;
-            border-image: linear-gradient(90deg, #7c3aed, #ff9e00 80%) 1;
-            cursor: pointer;
             display: flex;
             flex-direction: column;
-            transition: transform 0.35s cubic-bezier(.23,1.12,.72,1.01), box-shadow 0.35s cubic-bezier(.23,1.12,.72,1.01);
+            height: 370px;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 4px 18px 0 rgba(67,97,238,0.10);
+            border: 3px solid #ff9e00;
+            background: #2d2533;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .channel-header {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 18px 18px 0 0;
+        }
+        .channel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #222;
+            display: block;
+        }
+        .channel-badges {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: row;
+            gap: 6px;
+            z-index: 2;
+        }
+        .channel-badge {
+            padding: 0.18rem 0.7rem;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #fff;
+            background: #ff9e00;
+            box-shadow: 0 2px 8px #0002;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            opacity: 0.95;
+            margin-bottom: 0;
+        }
+        .channel-badge.live { background: linear-gradient(45deg, #f72585, #b5179e); }
+        .channel-badge.hd, .channel-badge.fhd, .channel-badge['4k'] { background: linear-gradient(45deg, #4cc9f0, #06d6a0); }
+        .channel-badge.premium { background: linear-gradient(135deg, #ff9e00, #ff6b35); }
+        .channel-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.1rem 1rem 0.9rem 1rem;
+            margin-top: 0;
+        }
+        .channel-info-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.7rem;
+        }
+        .channel-category {
+            background: #393e5c;
+            color: #fff;
+            border-radius: 20px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .channel-name {
+            font-size: 1.18rem;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .channel-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
         }
         .channel-card:hover {
             transform: translateY(-8px) scale(1.025);
@@ -966,6 +1025,7 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 1.1rem 1rem 0.9rem 1rem;
+            margin-top: 12px;
         }
         .channel-name {
             font-size: 1.18rem;
@@ -2279,7 +2339,7 @@
           border-radius: 25px !important;
           box-sizing: border-box;
         }
-        /* إطار برتقالي حول كاردات القنوات */
+        
         .channel-card {
           border: 3px solid #ff9e00 !important;
           border-radius: 25px !important;
@@ -2334,6 +2394,35 @@
             opacity: 0.5 !important;
             filter: grayscale(0.7);
         }
+        /* ترتيب جديد لمحتوى الكارد */
+        .channel-name-row {
+          font-size: 1.18rem;
+          font-weight: 800;
+          margin-bottom: 0.3rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .channel-category-row {
+          margin-bottom: 0.3rem;
+        }
+        .channel-category {
+          background: #393e5c;
+          color: #fff;
+          border-radius: 20px;
+          padding: 0.2rem 0.9rem;
+          font-size: 0.85rem;
+          font-weight: 700;
+          display: inline-block;
+        }
+        .channel-rating-row {
+          color: #aaa;
+          font-size: 0.95rem;
+          margin-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -2373,7 +2462,7 @@
     <div class="connection-status" id="connectionStatus">
         <div style="display: flex; align-items: center; gap: 10px;">
             <div class="loading-spinner"></div>
-            <span>جاري الاتصال بقاعدة البيانات...</span>
+            <span>جاري الاتصال ...</span>
         </div>
     </div>
 
@@ -2397,8 +2486,7 @@
             </div>
             <div class="nav-link" data-tab="categories">
                 <i class="fas fa-list"></i>
-                التصنيفات
-            </div>
+الأقسام            </div>
             <div class="nav-link" data-tab="favorites">
                 <i class="fas fa-heart"></i>
                 المفضلة
@@ -2421,10 +2509,6 @@
             <div class="action-btn" id="notificationBtn">
                 <i class="fas fa-bell"></i>
                 <div class="notification-badge">3</div>
-            </div>
-            
-            <div class="action-btn" id="themeBtn">
-                <i class="fas fa-moon"></i>
             </div>
             
             <div class="user-avatar" id="loginBtn">
@@ -2543,7 +2627,7 @@
                     <div class="filter-group">
                         <i class="fas fa-filter"></i>
                         <select class="filter-select" id="categoryFilter">
-                            <option value="">جميع التصنيفات</option>
+                            <option value="">جميع الأقسام</option>
                         </select>
                     </div>
                     
@@ -2578,7 +2662,7 @@
                         <div class="section-icon">
                             <i class="fas fa-list"></i>
                         </div>
-                        <h2 class="section-title">التصنيفات</h2>
+                        <h2 class="section-title">الأقسام</h2>
                     </div>
                 </div>
                 
@@ -2699,7 +2783,7 @@
                 <ul class="footer-links">
                     <li><a href="#" data-tab="home"><i class="fas fa-arrow-left"></i> الرئيسية</a></li>
                     <li><a href="#" data-tab="channels"><i class="fas fa-arrow-left"></i> القنوات</a></li>
-                    <li><a href="#" data-tab="categories"><i class="fas fa-arrow-left"></i> التصنيفات</a></li>
+                    <li><a href="#" data-tab="categories"><i class="fas fa-arrow-left"></i> الأقسام</a></li>
                     <li><a href="#" data-tab="favorites"><i class="fas fa-arrow-left"></i> المفضلة</a></li>
                     <li><a href="#" data-tab="news"><i class="fas fa-arrow-left"></i> الأخبار</a></li>
                 </ul>
@@ -2730,7 +2814,6 @@
         </div>
         
         <div class="copyright">
-            © 2025 TVHUB. All rights reserved. Ameer_7elwas
             <br>
             <small>  </small>
         </div>
@@ -2781,7 +2864,6 @@
                     videoPlayer: document.getElementById('videoPlayer'),
                     playerElement: document.getElementById('player'),
                     closePlayer: document.getElementById('closePlayer'),
-                    themeBtn: document.getElementById('themeBtn'),
                     homeBtn: document.getElementById('homeBtn'),
                     searchBtn: document.getElementById('searchBtn'),
                     searchInput: document.getElementById('searchInput'),
@@ -3228,9 +3310,6 @@
                     setTimeout(() => this.hideSearchResults(), 200);
                 });
                 
-                // Theme toggle
-                this.elements.themeBtn.addEventListener('click', () => this.toggleTheme());
-                
                 // Filters and sorting
                 document.getElementById('categoryFilter').addEventListener('change', (e) => {
                     this.currentFilters.category = e.target.value;
@@ -3663,15 +3742,10 @@
             
             toggleTheme() {
                 document.body.classList.toggle('dark-mode');
-                const icon = this.elements.themeBtn.querySelector('i');
                 
                 if (document.body.classList.contains('dark-mode')) {
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
                     localStorage.setItem('tvna_theme', 'dark');
                 } else {
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
                     localStorage.setItem('tvna_theme', 'light');
                 }
                 
@@ -3872,17 +3946,14 @@
                         </div>
                     </div>
                     <div class="channel-content">
-                        <h3 class="channel-name">
-                            <i class="fas fa-satellite"></i>
-                            ${channel.nameAr}
-                            <span class="channel-category" onclick="tvnaApp.showCategoryChannels('${channel.category}'); event.stopPropagation();">${this.getCategoryNameAr(channel.category)}</span>
-                        </h3>
-                        <p class="channel-desc">${channel.descriptionAr}</p>
-                        <div class="channel-stats">
-                            <div class="stat">
-                                <i class="fas fa-star"></i>
-                                <span>${channel.rating.toFixed(1)}</span>
-                            </div>
+                        <div class="channel-name-row">
+                            <span class="channel-name">${channel.nameAr} <i class="fas fa-satellite"></i></span>
+                        </div>
+                        <div class="channel-category-row">
+                            <span class="channel-category">${this.getCategoryNameAr(channel.category)}</span>
+                        </div>
+                        <div class="channel-rating-row">
+                            <span>${channel.rating.toFixed(1)} <i class="fas fa-star"></i></span>
                         </div>
                         <div class="channel-actions">
                             <div class="channel-action-btn favorite ${isFavorite ? 'active' : ''}" 
@@ -4118,7 +4189,7 @@
                 if (!categoryFilter) return;
                 
                 
-                categoryFilter.innerHTML = '<option value="">جميع التصنيفات</option>';
+                categoryFilter.innerHTML = '<option value="">جميع الأقسام</option>';
                 
                 this.categories.forEach(category => {
                     const option = document.createElement('option');
@@ -4208,7 +4279,7 @@
                             }
                         });
                     } else {
-                        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
+                        grid.style.gridTemplateColumns = '';
                         grid.querySelectorAll('.channel-card').forEach(card => {
                             card.style.display = 'block';
                             card.style.height = 'auto';
@@ -4558,6 +4629,17 @@
         const newsSources = {
           all: [
             'https://www.aljazeera.net/aljazeera/rss',
+            'https://www.aljazeera.net/aljazeeralive/rss',
+            'https://aawsat.com/home/rss.xml',
+            'https://www.youm7.com/rss/SectionRss?SectionID=65',
+            'https://arabic.rt.com/rss/',
+            'https://www.aa.com.tr/ar/rss/default?cat=general',
+            'https://arabic.cnn.com/rss',
+            'https://sabq.org/rss',
+            'https://www.alriyadh.com/rss',
+            'https://alwatannews.net/rss',
+            'https://www.albayan.ae/polopoly_fs/1.2011971.1495780426!/menu/standard/file/rss.xml',
+            'https://www.alsumaria.tv/rss/ar-iraq-news',
             'https://www.alarabiya.net/.mrss/ar.xml',
             'https://www.skynewsarabia.com/web/rss/latest.xml',
             'https://www.bbc.com/arabic/index.xml',
@@ -4566,21 +4648,38 @@
             'https://aitnews.com/feed/'
           ],
           sports: [
-  'https://www.kooora.com/?n=0&o=rss',
-  'https://www.yallakora.com/rss/News',
-  'https://www.filgoal.com/rss/news',
-  'https://www.beinsports.com/ar/rss',
-  'https://www.alarabiya.net/.mrss/ar/sports.xml',
-  'https://www.skynewsarabia.com/web/rss/sports.xml',
-  'https://www.koraplus.com/rss',
-  'https://www.koraon.com/feed/',
-  'https://www.akhbaralaan.net/feed/category/sports'
-],
+            'https://www.kooora.com/?n=0&o=rss',
+            'https://www.yallakora.com/rss/News',
+            'https://www.filgoal.com/rss/news',
+            'https://www.koraplus.com/rss',
+            'https://www.koraon.com/feed/',
+            'https://www.skynewsarabia.com/web/rss/sports.xml',
+            'https://www.alarabiya.net/.mrss/ar/sports.xml',
+            'https://arabic.rt.com/rss/sports/',
+            'https://arriyadiyah.com/rss',
+            'https://www.alyaum.com/rss/categories/3',
+            'https://www.kooranew.com/feed/',
+            'https://kora365.com/feed/',
+            'https://www.btolat.com/rss/news',
+            'https://www.superkora.football/rss',
+            'https://arabic.sport360.com/feed'
+          ],
           technology: [
             'https://aitnews.com/feed/'
           ],
           general: [
             'https://www.aljazeera.net/aljazeera/rss',
+            'https://www.aljazeera.net/aljazeeralive/rss',
+            'https://aawsat.com/home/rss.xml',
+            'https://www.youm7.com/rss/SectionRss?SectionID=65',
+            'https://arabic.rt.com/rss/',
+            'https://www.aa.com.tr/ar/rss/default?cat=general',
+            'https://arabic.cnn.com/rss',
+            'https://sabq.org/rss',
+            'https://www.alriyadh.com/rss',
+            'https://alwatannews.net/rss',
+            'https://www.albayan.ae/polopoly_fs/1.2011971.1495780426!/menu/standard/file/rss.xml',
+            'https://www.alsumaria.tv/rss/ar-iraq-news',
             'https://www.alarabiya.net/.mrss/ar.xml',
             'https://www.skynewsarabia.com/web/rss/latest.xml',
             'https://www.bbc.com/arabic/index.xml'
@@ -4617,8 +4716,21 @@
           }
           // ترتيب حسب الأحدث
           allNews.sort((a,b)=>new Date(b.pubDate)-new Date(a.pubDate));
-          // عرض الأخبار
-          grid.innerHTML = allNews.slice(0,16).map(news => `
+          // تصفية الأخبار المكررة حسب العنوان أو الرابط
+          const uniqueNews = [];
+          const seenTitles = new Set();
+          const seenLinks = new Set();
+          for (const news of allNews) {
+            const title = (news.title || '').trim();
+            const link = (news.link || '').trim();
+            if (!seenTitles.has(title) && !seenLinks.has(link)) {
+              uniqueNews.push(news);
+              seenTitles.add(title);
+              seenLinks.add(link);
+            }
+          }
+          // عرض الأخبار بعد التصفية (عدد أكبر)
+          grid.innerHTML = uniqueNews.slice(0, 40).map(news => `
             <div class="news-card" style="background:var(--glass);border-radius:16px;box-shadow:0 2px 12px rgba(67,97,238,0.08);overflow:hidden;display:flex;flex-direction:column;">
               ${news.image ? `<img src="${news.image}" alt="news" style="width:100%;height:160px;object-fit:cover;">` : ''}
               <div style="padding:1rem;flex:1;display:flex;flex-direction:column;justify-content:space-between;">
@@ -4637,14 +4749,21 @@
 
         // تفعيل الفلاتر
         if(document.getElementById('newsCardsGrid')){
-          loadNews('all');
+          let currentNewsType = 'all';
+          function reloadNews() {
+            loadNews(currentNewsType);
+          }
+          reloadNews();
           document.querySelectorAll('.news-filter-btn').forEach(btn=>{
             btn.onclick = function(){
               document.querySelectorAll('.news-filter-btn').forEach(b=>b.classList.remove('active'));
               btn.classList.add('active');
-              loadNews(btn.getAttribute('data-type'));
+              currentNewsType = btn.getAttribute('data-type');
+              reloadNews();
             };
           });
+          // تحديث تلقائي كل 3 دقائق
+          setInterval(reloadNews, 180000);
         }
 
         document.addEventListener('DOMContentLoaded', function () {
