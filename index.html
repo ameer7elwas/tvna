@@ -2384,7 +2384,7 @@
 </defs>
 </svg>
             </div>
-            <div class="loader-text">TV HUB</div>
+            <div class="loader-text">مرحباً بك </div>
             <div class="loader-spinner"></div>
         </div>
     </div>
@@ -2435,11 +2435,6 @@
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="search-results" id="searchResults"></div>
-            </div>
-            
-            <div class="action-btn" id="notificationBtn">
-                <i class="fas fa-bell"></i>
-                <div class="notification-badge">3</div>
             </div>
             
             <div class="user-avatar" id="loginBtn">
@@ -2562,21 +2557,7 @@
                         </select>
                     </div>
                     
-                    <div class="filter-group">
-                        <i class="fas fa-signal"></i>
-                        <select class="filter-select" id="qualityFilter">
-                            <option value="">جميع الجودات</option>
-                            <option value="HD">HD</option>
-                            <option value="FHD"> FHD</option>
-                            <option value="4K">دقة 4K</option>
-                        </select>
-                    </div>
-                    
-                    <div class="sort-toggle">
-                        <div class="sort-btn active" data-sort="name">الاسم</div>
-                        <div class="sort-btn" data-sort="popularity">الشعبية</div>
-                        <div class="sort-btn" data-sort="rating">التقييم</div>
-                    </div>
+                    <!-- تم حذف فلتر الجودة وأزرار الترتيب بالكامل -->
                 </div>
                 
                 <div class="channels-grid" id="allChannels">
@@ -2749,14 +2730,6 @@
         </div>
     </footer>
 
-    <div class="notifications-dropdown" id="notificationsDropdown" style="display:none;position:absolute;top:60px;left:0;right:0;max-width:350px;margin:auto;z-index:2000;background:var(--glass);backdrop-filter:blur(18px);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.18);border:1px solid var(--glass-border);">
-      <div style="padding:1rem 1.2rem 0.5rem;font-weight:900;font-size:1.1rem;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;justify-content:space-between;">
-        <span>الإشعارات</span>
-        <button id="markAllReadBtn" style="background:none;border:none;color:var(--primary);font-size:0.95rem;cursor:pointer;">تحديد كمقروء</button>
-      </div>
-      <div id="notificationsList" style="max-height:350px;overflow-y:auto;"></div>
-    </div>
-
     <script>
         class TvNaApp {
             constructor() {
@@ -2800,13 +2773,6 @@
                     toastContainer: document.getElementById('toastContainer')
                 };
                 
-                this.notificationElements = {
-                  notificationBtn: document.getElementById('notificationBtn'),
-                  notificationsDropdown: document.getElementById('notificationsDropdown'),
-                  notificationsList: document.getElementById('notificationsList'),
-                  badge: document.querySelector('#notificationBtn .notification-badge'),
-                  markAllReadBtn: document.getElementById('markAllReadBtn')
-                };
                 this.notifications = [];
                 this.lastNotifiedIds = [];
                 
@@ -3236,20 +3202,7 @@
                     this.filterChannels();
                 });
                 
-                document.getElementById('qualityFilter').addEventListener('change', (e) => {
-                    this.currentFilters.quality = e.target.value;
-                    this.filterChannels();
-                });
-                
-                document.querySelectorAll('.sort-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        this.currentSort = btn.getAttribute('data-sort');
-                        this.updateSortButtons();
-                        this.sortChannels();
-                    });
-                });
-                
-                
+            
                 document.querySelectorAll('.view-toggle-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
                         document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.remove('active'));
@@ -3307,31 +3260,6 @@
                     }
                 });
 
-                this.notificationElements.notificationBtn.addEventListener('click', (e) => {
-                  e.stopPropagation();
-                  if (this.notificationElements.notificationsDropdown.style.display === 'block') {
-                    this.notificationElements.notificationsDropdown.style.display = 'none';
-                  } else {
-                    this.notificationElements.notificationsDropdown.style.display = 'block';
-                    this.loadAndShowNotifications();
-                  }
-                });
-                document.addEventListener('click', (e) => {
-                  if (!this.notificationElements.notificationsDropdown.contains(e.target) && e.target !== this.notificationElements.notificationBtn) {
-                    this.notificationElements.notificationsDropdown.style.display = 'none';
-                  }
-                });
-                this.notificationElements.markAllReadBtn.addEventListener('click', () => {
-                  this.markAllNotificationsRead(this.notifications.map(n => n.id));
-                  this.renderNotifications(this.notifications);
-                });
-                
-                setInterval(() => {
-                  if (this.notificationElements.notificationsDropdown.style.display === 'block') this.loadAndShowNotifications();
-                  else this.updateNotificationBadge();
-                }, 60000);
-             
-                setTimeout(() => this.updateNotificationBadge(), 2000);
             }
             
             loadMockData() {
@@ -4121,77 +4049,11 @@
                     );
                 }
                 
-                this.sortChannelsArray(filtered);
-                
                 this.renderChannelsInContainer(document.getElementById('allChannels'), filtered);
             }
             
             sortChannels() {
                 this.filterChannels();
-            }
-            
-            sortChannelsArray(channels) {
-                channels.sort((a, b) => {
-                    switch (this.currentSort) {
-                        case 'name':
-                            return a.nameAr.localeCompare(b.nameAr);
-                        case 'popularity':
-                            return b.viewersCount - a.viewersCount;
-                        case 'rating':
-                            return b.rating - a.rating;
-                        default:
-                            return 0;
-                    }
-                });
-            }
-            
-            updateSortButtons() {
-                document.querySelectorAll('.sort-btn').forEach(btn => {
-                    btn.classList.toggle('active', btn.getAttribute('data-sort') === this.currentSort);
-                });
-            }
-            
-            updateFavoriteButtons() {
-                document.querySelectorAll('.channel-action-btn.favorite').forEach(btn => {
-                    const channelId = btn.getAttribute('data-id');
-                    const isFavorite = this.favorites.some(f => f.id === channelId);
-                    btn.classList.toggle('active', isFavorite);
-                    btn.title = isFavorite ? 'إزالة من المفضلة' : 'إضافة للمفضلة';
-                });
-            }
-            
-            updateView(viewType) {
-                const grids = document.querySelectorAll('.channels-grid');
-                grids.forEach(grid => {
-                    if (viewType === 'list') {
-                        grid.style.gridTemplateColumns = '1fr';
-                        grid.querySelectorAll('.channel-card').forEach(card => {
-                            card.style.display = 'flex';
-                            card.style.height = 'auto';
-                            const header = card.querySelector('.channel-header');
-                            const content = card.querySelector('.channel-content');
-                            if (header && content) {
-                                header.style.width = '200px';
-                                header.style.minWidth = '200px';
-                                header.style.height = '120px';
-                                content.style.flex = '1';
-                            }
-                        });
-                    } else {
-                        grid.style.gridTemplateColumns = '';
-                        grid.querySelectorAll('.channel-card').forEach(card => {
-                            card.style.display = 'block';
-                            card.style.height = 'auto';
-                            const header = card.querySelector('.channel-header');
-                            const content = card.querySelector('.channel-content');
-                            if (header && content) {
-                                header.style.width = '100%';
-                                header.style.height = '200px';
-                                content.style.flex = 'none';
-                            }
-                        });
-                    }
-                });
             }
             
             clearAllFavorites() {
@@ -4404,98 +4266,7 @@
                 return emailRegex.test(email);
             }
 
-            async fetchUserNotifications() {
-              if (!this.currentUser) return [];
-              const res = await fetch('https://vpvvjascwgivdjyyhzwp.supabase.co/rest/v1/notifications?is_active=eq.true&order=send_date.desc', {
-                headers: {
-                  apikey: this.SUPABASE_KEY,
-                  Authorization: 'Bearer ' + this.SUPABASE_KEY
-                }
-              });
-              const notifications = await res.json();
-              return notifications.filter(n => {
-                if (!n.target_users || n.target_users.length === 0 || n.target_users.includes('all')) return true;
-                if (n.target_users.includes(this.currentUser.membershipType)) return true;
-                if (n.target_users.includes(this.currentUser.id)) return true;
-                return false;
-              });
-            }
-            getReadNotifications() {
-              return JSON.parse(localStorage.getItem('tvna_read_notifications') || '[]');
-            }
-            markNotificationRead(id) {
-              const read = this.getReadNotifications();
-              if (!read.includes(id)) {
-                read.push(id);
-                localStorage.setItem('tvna_read_notifications', JSON.stringify(read));
-              }
-            }
-            markAllNotificationsRead(ids) {
-              localStorage.setItem('tvna_read_notifications', JSON.stringify(ids));
-            }
-            renderNotifications(notifications) {
-              const read = this.getReadNotifications();
-              let unreadCount = 0;
-              this.notificationElements.notificationsList.innerHTML = notifications.length === 0
-                ? '<div style="padding:2rem;text-align:center;color:#888;">لا توجد إشعارات جديدة</div>'
-                : notifications.slice(0, 15).map(n => {
-                  const isUnread = !read.includes(n.id);
-                  if (isUnread) unreadCount++;
-                  const typeClass = n.type === 'urgent' ? 'urgent' : n.type === 'warning' ? 'warning' : n.type === 'update' ? 'update' : n.type === 'promotion' ? 'promotion' : '';
-                  return `<div class="notification-item${isUnread ? ' unread' : ''}" data-id="${n.id}">
-                    <span class="notification-type-badge ${typeClass}">${n.type === 'urgent' ? 'عاجل' : n.type === 'warning' ? 'تحذير' : n.type === 'update' ? 'تحديث' : n.type === 'promotion' ? 'عرض' : 'تنبيه'}</span>
-                    <div class="notification-title">${n.title_ar || n.title}</div>
-                    <div class="notification-content">${n.message_ar || n.message}</div>
-                    <div class="notification-date">${new Date(n.send_date).toLocaleString('ar-EG')}</div>
-                  </div>`;
-                }).join('');
-              this.notificationElements.badge.textContent = unreadCount > 0 ? unreadCount : '';
-              this.notificationElements.badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-              
-              this.notificationElements.notificationsList.querySelectorAll('.notification-item').forEach(item => {
-                item.onclick = () => {
-                  this.markNotificationRead(item.dataset.id);
-                  item.classList.remove('unread');
-                  this.updateNotificationBadge();
-                };
-              });
-            }
-            async loadAndShowNotifications() {
-              if (!this.currentUser) {
-                this.notificationElements.notificationsList.innerHTML = '<div style="padding:2rem;text-align:center;color:#888;">سجّل الدخول لعرض الإشعارات</div>';
-                this.notificationElements.badge.style.display = 'none';
-                return;
-              }
-              this.notifications = await this.fetchUserNotifications();
-              this.renderNotifications(this.notifications);
-            }
-            async updateNotificationBadge() {
-              if (!this.currentUser) {
-                this.notificationElements.badge.style.display = 'none';
-                return;
-              }
-              const notifications = await this.fetchUserNotifications();
-              const read = this.getReadNotifications();
-              const unread = notifications.filter(n => !read.includes(n.id));
-              const unreadCount = unread.length;
-              this.notificationElements.badge.textContent = unreadCount > 0 ? unreadCount : '';
-              this.notificationElements.badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-             
-              if (unread.length > 0) {
-                const newOnes = unread.filter(n => !this.lastNotifiedIds.includes(n.id));
-                if (newOnes.length > 0) {
-                  
-                  newOnes.forEach(n => {
-                    this.showToast(`<b>${n.title_ar || n.title}</b><br>${n.message_ar || n.message}`, 'info', 4000);
-                  });
-                  
-                  const audio = document.getElementById('notifSound');
-                  if (audio) { audio.currentTime = 0; audio.play(); }
-                 
-                  this.lastNotifiedIds = [...this.lastNotifiedIds, ...newOnes.map(n => n.id)].slice(-30);
-                }
-              }
-            }
+            // تم حذف جميع دوال الإشعارات مثل fetchUserNotifications، getReadNotifications، markNotificationRead، markAllNotificationsRead، renderNotifications، loadAndShowNotifications، updateNotificationBadge
         }
         
         
@@ -4680,31 +4451,6 @@
           }
         });
 
-        
-        if ("Notification" in window) {
-          if (Notification.permission === "granted") {
-            newOnes.forEach(n => {
-              new Notification(n.title_ar || n.title, {
-                body: n.message_ar || n.message,
-                icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827349.png',
-                silent: false 
-              });
-            });
-          } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(p => {
-              if (p === "granted") {
-                newOnes.forEach(n => {
-                  new Notification(n.title_ar || n.title, {
-                    body: n.message_ar || n.message,
-                    icon: 'https://cdn-icons-png.flaticon.com/512/1827/1827349.png',
-                    silent: false
-                  });
-                });
-              }
-            });
-          }
-        }
-
         document.addEventListener('DOMContentLoaded', function(){
           var btn = document.getElementById('testNotifSoundBtn');
           var msg = document.getElementById('notifSoundMsg');
@@ -4725,8 +4471,7 @@
           }
         });
 
-        this.elements.loginBtn.classList.add('disabled');
-        this.elements.loginBtn.onclick = null;
+       
     </script>
     <script>
     
