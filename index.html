@@ -70,12 +70,6 @@
                 radial-gradient(circle at 80% 20%, rgba(247, 37, 133, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(58, 12, 163, 0.1) 0%, transparent 50%);
             z-index: -1;
-            animation: backgroundShift 20s ease-in-out infinite;
-        }
-
-        @keyframes backgroundShift {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.1) rotate(2deg); }
         }
 
         /* Scrollbar Styling */
@@ -109,7 +103,6 @@
             justify-content: center;
             z-index: 9999;
             opacity: 1;
-            transition: opacity 0.5s ease;
         }
 
         .page-loader.hidden {
@@ -131,13 +124,6 @@
             justify-content: center;
             font-size: 2rem;
             margin: 0 auto 1rem;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
         }
 
         .loader-text {
@@ -154,13 +140,7 @@
             border: 4px solid rgba(67, 97, 238, 0.3);
             border-top: 4px solid var(--primary);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
             margin: 1rem auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         /* Header Enhanced */
@@ -176,7 +156,6 @@
             z-index: 1000;
             box-shadow: var(--shadow-medium);
             border-bottom: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
         }
 
         header.scrolled {
@@ -189,11 +168,10 @@
             align-items: center;
             gap: 1rem;
             cursor: pointer;
-            transition: transform 0.3s ease;
         }
 
         .logo:hover {
-            transform: scale(1.05);
+            /* No transform */
         }
 
         .logo-icon {
@@ -219,13 +197,6 @@
             height: 200%;
             background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
             transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-            100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
         }
 
         .logo-text {
@@ -253,7 +224,6 @@
             border-radius: 50px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             white-space: nowrap;
@@ -268,8 +238,6 @@
         .nav-link:hover::before, .nav-link:hover, .nav-link.active {
             background: var(--premium);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
         }
 
         .user-actions {
@@ -346,7 +314,6 @@
             justify-content: center;
             background: var(--glass);
             font-size: 1.2rem;
-            transition: all 0.3s ease;
             position: relative;
         }
 
@@ -357,8 +324,7 @@
         }
 
         .user-avatar:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(67, 97, 238, 0.5);
+            /* No transform or box-shadow */
         }
 
         .user-avatar.logged-in {
@@ -381,13 +347,6 @@
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-5px); }
-            60% { transform: translateY(-3px); }
         }
 
         /* Connection Status */
@@ -701,7 +660,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            animation: pulse 2s infinite;
         }
 
         .live-badge::before {
@@ -710,12 +668,6 @@
             height: 8px;
             background: white;
             border-radius: 50%;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
         }
 
         .view-toggle {
@@ -731,7 +683,6 @@
             padding: 0.5rem 1rem;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-size: 0.9rem;
         }
 
@@ -764,13 +715,10 @@
             justify-content: flex-end;
             padding: 3rem;
             opacity: 0;
-            transition: all 1s ease;
-            transform: scale(1.1);
         }
 
         .ad-slide.active {
             opacity: 1;
-            transform: scale(1);
         }
 
         .ad-slide::before {
@@ -831,14 +779,11 @@
             text-decoration: none;
             color: white;
             font-weight: 600;
-            transition: all 0.3s ease;
             border: 1px solid var(--glass-border);
         }
 
         .ad-link:hover {
             background: var(--primary);
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-light);
         }
 
         .carousel-indicators {
@@ -857,12 +802,10 @@
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.4);
             cursor: pointer;
-            transition: all 0.3s ease;
         }
 
         .carousel-indicator.active {
             background: white;
-            transform: scale(1.2);
         }
 
         .carousel-nav {
@@ -1089,7 +1032,6 @@
 
         .channel-badge.live {
             background: linear-gradient(45deg, var(--accent), #b5179e);
-            animation: pulse 2s infinite;
         }
 
         .channel-badge.premium {
@@ -1111,7 +1053,6 @@
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: all 0.3s ease;
         }
 
         .channel-card:hover .channel-overlay {
@@ -1130,12 +1071,10 @@
             font-size: 2rem;
             color: white;
             border: 2px solid var(--glass-border);
-            transition: all 0.3s ease;
         }
 
         .play-overlay:hover {
             background: var(--primary);
-            transform: scale(1.1);
         }
 
         .channel-content {
@@ -1269,7 +1208,6 @@
             padding: 0.5rem 1rem;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-size: 0.9rem;
             font-weight: 500;
         }
@@ -1308,18 +1246,6 @@
             box-shadow: var(--shadow-heavy);
             position: relative;
             border: 1px solid var(--glass-border);
-            animation: modalSlideIn 0.3s ease-out;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
         }
 
         .close-modal {
@@ -1342,7 +1268,6 @@
         .close-modal:hover {
             background: var(--accent);
             color: white;
-            transform: scale(1.1);
         }
 
         .modal-title {
@@ -1438,7 +1363,6 @@
             z-index: 3000;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.3s;
         }
         .video-player.show {
             display: flex;
@@ -1508,7 +1432,6 @@
         }
         .player-btn:hover {
             background: var(--primary);
-            transform: scale(1.1);
         }
         @media (max-width: 600px) {
           .player-controls {
@@ -1534,7 +1457,6 @@
             min-width: 340px;
             max-width: 95vw;
             pointer-events: none;
-            transition: opacity 0.4s, top 0.4s;
         }
         .toast {
             pointer-events: auto;
@@ -1553,13 +1475,10 @@
             gap: 1.2rem;
             border: 2.5px solid #4ecdc4;
             position: relative;
-            transition: all 0.4s cubic-bezier(.23,1.12,.72,1.01), opacity 0.4s, transform 0.4s;
             opacity: 0;
-            transform: translateY(-40px);
         }
         .toast.show {
             opacity: 1;
-            transform: translateY(0);
         }
         .toast-icon {
             font-size: 2.5rem !important;
@@ -1574,7 +1493,6 @@
             color: #fff;
             opacity: 0.7;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
         .toast-close:hover { opacity: 1; }
         .toast-message {
@@ -1595,7 +1513,6 @@
         .toast-close {
             cursor: pointer;
             opacity: 0.6;
-            transition: opacity 0.3s ease;
         }
         .toast-close:hover {
             opacity: 1;
@@ -1620,7 +1537,6 @@
         .toast-close {
             cursor: pointer;
             opacity: 0.6;
-            transition: opacity 0.3s ease;
         }
         .toast-close:hover {
             opacity: 1;
@@ -1848,45 +1764,25 @@
             }
         }
         /* Animation Classes */
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
+        .fade-in, .slide-in-left, .slide-in-right, .loading-skeleton, .tab-content, .tab-content.active {
+            animation: none !important;
+            transition: none !important;
         }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .slide-in-left {
-            animation: slideInLeft 0.6s ease-out;
-        }
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        .slide-in-right {
-            animation: slideInRight 0.6s ease-out;
-        }
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
+        @keyframes backgroundShift {}
+        @keyframes pulse {}
+        @keyframes spin {}
+        @keyframes shine {}
+        @keyframes heroRotate {}
+        @keyframes shineAnim {}
+        @keyframes cardPopIn {}
+        @keyframes bgMove {}
+        @keyframes shineStat {}
+        @keyframes blink {}
+        @keyframes fadeIn {}
+        @keyframes slideInLeft {}
+        @keyframes slideInRight {}
+        @keyframes loading {}
+        @keyframes tabFadeIn {}
         /* Loading States */
         .loading-skeleton {
             background: linear-gradient(90deg, 
@@ -1937,7 +1833,6 @@
         /* Tab Content Animation */
         .tab-content {
             display: none;
-            animation: tabFadeIn 0.3s ease-out;
         }
         .tab-content.active {
             display: block;
@@ -2072,7 +1967,6 @@
             border-radius: 50px;
             padding: 0.7rem 2.2rem;
             cursor: pointer;
-            transition: all 0.2s;
             box-shadow: 0 2px 12px rgba(67,97,238,0.07);
             outline: none;
             position: relative;
@@ -3526,18 +3420,7 @@
             }
             
             animateElements() {
-               
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('fade-in');
-                        }
-                    });
-                });
-                
-                document.querySelectorAll('.channel-card, .stat-card, .section').forEach(el => {
-                    observer.observe(el);
-                });
+                // Disabled: No animations
             }
             
             showLoginModal() {
@@ -3872,13 +3755,11 @@
                 container.appendChild(prevBtn);
                 container.appendChild(nextBtn);
                 
-                this.startCarouselRotation();
+                // Disabled: this.startCarouselRotation();
             }
             
             startCarouselRotation() {
-                this.carouselInterval = setInterval(() => {
-                    this.nextSlide();
-                }, 5000);
+                // Disabled: No auto-rotation
             }
             
             nextSlide() {
@@ -4427,7 +4308,7 @@
             
             showToast(message, type = 'info', duration = 3000) {
                 const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
+                toast.className = `toast ${type} show`;
                 
                 const icons = {
                     success: 'fas fa-check-circle',
